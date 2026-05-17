@@ -7,6 +7,7 @@
 
 // ── Auth check ────────────────────────────────────────────────
 session_start();
+
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header('Location: login.php');
     exit();
@@ -82,7 +83,7 @@ $activePage = 'dashboard'; //used in sidebar to highlight current page
         <div class="card">
             <h3>Recently Registered Students</h3>
             <table>
-                
+
                 <thead>
                     <tr>
                         <th>Name</th>
