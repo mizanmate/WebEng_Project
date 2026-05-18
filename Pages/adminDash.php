@@ -1,68 +1,27 @@
 <?php
 // ================================================================
 //  adminDash.php
-<<<<<<< HEAD
-<<<<<<< HEAD
 //  Admin dashboard — summary statistics and Module 2 club overview.
 //  Access: admin role only.
 // ================================================================
 
 session_start();
-=======
-//  Admin dashboard — summary statistics and quick overview.
-=======
-//  Admin dashboard — summary statistics and Module 2 club overview.
->>>>>>> 0601bc1c42d79e127dc0f1f0b317c1ad1963b0d2
-//  Access: admin role only.
-// ================================================================
-
-session_start();
-<<<<<<< HEAD
-
->>>>>>> 2f56a39d48beca8d7135299cdf5b0c25cb0e7999
-=======
->>>>>>> 0601bc1c42d79e127dc0f1f0b317c1ad1963b0d2
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header('Location: login.php');
     exit();
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 require_once 'DB_connection.php';
 
 // ── Main statistics ───────────────────────────────────────────
-=======
-// ── Database ──────────────────────────────────────────────────
-require_once 'DB_connection.php';
-
-// ── Statistics ────────────────────────────────────────────────
->>>>>>> 2f56a39d48beca8d7135299cdf5b0c25cb0e7999
-=======
-require_once 'DB_connection.php';
-
-// ── Main statistics ───────────────────────────────────────────
->>>>>>> 0601bc1c42d79e127dc0f1f0b317c1ad1963b0d2
 $totalStudents = mysqli_fetch_row(mysqli_query($link, "SELECT COUNT(*) FROM Student"))[0];
 $totalClubs    = mysqli_fetch_row(mysqli_query($link, "SELECT COUNT(*) FROM Club"))[0];
 $activeClubs   = mysqli_fetch_row(mysqli_query($link, "SELECT COUNT(*) FROM Club WHERE ClubStatus = 'active'"))[0];
 $totalEvents   = mysqli_fetch_row(mysqli_query($link, "SELECT COUNT(*) FROM Event"))[0];
-<<<<<<< HEAD
-<<<<<<< HEAD
 $totalCommitteeMembers = mysqli_fetch_row(mysqli_query($link, "SELECT COUNT(DISTINCT userID) FROM ClubCommitee"))[0];
 $totalClubInvolvement  = mysqli_fetch_row(mysqli_query($link, "SELECT COUNT(DISTINCT userID) FROM ClubMembership"))[0];
 
 // ── Recent students ───────────────────────────────────────────
-=======
-
-// ── Recent students (last 5 registered) ───────────────────────
->>>>>>> 2f56a39d48beca8d7135299cdf5b0c25cb0e7999
-=======
-$totalCommitteeMembers = mysqli_fetch_row(mysqli_query($link, "SELECT COUNT(DISTINCT userID) FROM ClubCommitee"))[0];
-$totalClubInvolvement  = mysqli_fetch_row(mysqli_query($link, "SELECT COUNT(DISTINCT userID) FROM ClubMembership"))[0];
-
-// ── Recent students ───────────────────────────────────────────
->>>>>>> 0601bc1c42d79e127dc0f1f0b317c1ad1963b0d2
 $recentStudents = mysqli_query($link,
     "SELECT l.name, s.StudentID, s.Programme
      FROM   Student s
@@ -71,36 +30,16 @@ $recentStudents = mysqli_query($link,
      LIMIT  5"
 );
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 // ── Upcoming events ───────────────────────────────────────────
-=======
-// ── Upcoming events (from Event table — populated by other module) ──
->>>>>>> 2f56a39d48beca8d7135299cdf5b0c25cb0e7999
-=======
-// ── Upcoming events ───────────────────────────────────────────
->>>>>>> 0601bc1c42d79e127dc0f1f0b317c1ad1963b0d2
 $upcomingEvents = mysqli_query($link,
     "SELECT e.eventTitle, c.ClubName, e.eventDate, e.eventStatus
      FROM   Event e
      JOIN   Club  c ON c.ClubID = e.ClubID
-<<<<<<< HEAD
-<<<<<<< HEAD
      WHERE  e.eventStatus = 'upcoming' OR e.eventDate >= CURDATE()
-=======
-     WHERE  e.eventStatus = 'upcoming'
->>>>>>> 2f56a39d48beca8d7135299cdf5b0c25cb0e7999
-=======
-     WHERE  e.eventStatus = 'upcoming' OR e.eventDate >= CURDATE()
->>>>>>> 0601bc1c42d79e127dc0f1f0b317c1ad1963b0d2
      ORDER  BY e.eventDate ASC
      LIMIT  5"
 );
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 0601bc1c42d79e127dc0f1f0b317c1ad1963b0d2
 // ── Module 2 chart data: distribution of students across clubs ─
 $clubDistribution = mysqli_query($link,
     "SELECT c.ClubName, COUNT(DISTINCT cm.userID) AS totalMembers
@@ -119,7 +58,6 @@ $maxMembersRow = mysqli_fetch_row(mysqli_query($link,
      ) AS club_counts"
 ));
 $maxMembers = max(1, (int)($maxMembersRow[0] ?? 0));
-<<<<<<< HEAD
 
 $clubStatusSummary = mysqli_query($link,
     "SELECT ClubStatus, COUNT(*) AS total
@@ -130,51 +68,15 @@ $clubStatusSummary = mysqli_query($link,
 $pageTitle  = 'Admin Dashboard';
 $activePage = 'dashboard';
 ?>
-=======
-// ── Page meta ─────────────────────────────────────────────────
-$pageTitle  = 'Admin Dashboard'; //used in head for Tab title
-$activePage = 'dashboard'; //used in sidebar to highlight current page
-?>
-
->>>>>>> 2f56a39d48beca8d7135299cdf5b0c25cb0e7999
-=======
-
-$clubStatusSummary = mysqli_query($link,
-    "SELECT ClubStatus, COUNT(*) AS total
-     FROM Club
-     GROUP BY ClubStatus"
-);
-
-$pageTitle  = 'Admin Dashboard';
-$activePage = 'dashboard';
-?>
->>>>>>> 0601bc1c42d79e127dc0f1f0b317c1ad1963b0d2
 <!DOCTYPE html>
 <html lang="en">
 <head><?php include 'includes/head.php'; ?></head>
 <body>
-<<<<<<< HEAD
-<<<<<<< HEAD
 <div class="app">
     <?php include 'includes/sidebar_admin.php'; ?>
 
     <main class="main-content">
         <h2>Admin Dashboard</h2>
-
-        <div class="quick-actions">
-            <a href="adminClubManagement.php" class="btn btn-primary btn-sm">Manage Clubs</a>
-            <a href="adminCommitteeManagement.php" class="btn btn-secondary btn-sm">Manage Committees</a>
-        </div>
-=======
-
-=======
->>>>>>> 0601bc1c42d79e127dc0f1f0b317c1ad1963b0d2
-<div class="app">
-    <?php include 'includes/sidebar_admin.php'; ?>
-
-    <main class="main-content">
-        <h2>Admin Dashboard</h2>
->>>>>>> 2f56a39d48beca8d7135299cdf5b0c25cb0e7999
 
         <div class="quick-actions">
             <a href="adminClubManagement.php" class="btn btn-primary btn-sm">Manage Clubs</a>
@@ -184,8 +86,6 @@ $activePage = 'dashboard';
         <!-- ── Stats row ── -->
         <div class="stats-grid">
             <div class="stat-card">
-<<<<<<< HEAD
-<<<<<<< HEAD
                 <div class="stat-number"><?= (int)$totalStudents ?></div>
                 <div class="stat-label">Total Students</div>
             </div>
@@ -262,103 +162,12 @@ $activePage = 'dashboard';
                     </tbody>
                 </table>
             </div>
-=======
-                <div class="stat-number"><?= $totalStudents ?></div>
-=======
-                <div class="stat-number"><?= (int)$totalStudents ?></div>
->>>>>>> 0601bc1c42d79e127dc0f1f0b317c1ad1963b0d2
-                <div class="stat-label">Total Students</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number"><?= (int)$totalClubs ?></div>
-                <div class="stat-label">Total Clubs</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number"><?= (int)$activeClubs ?></div>
-                <div class="stat-label">Active Clubs</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number"><?= (int)$totalEvents ?></div>
-                <div class="stat-label">Total Events</div>
-            </div>
-<<<<<<< HEAD
->>>>>>> 2f56a39d48beca8d7135299cdf5b0c25cb0e7999
-=======
-            <div class="stat-card">
-                <div class="stat-number"><?= (int)$totalCommitteeMembers ?></div>
-                <div class="stat-label">Committee Members</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number"><?= (int)$totalClubInvolvement ?></div>
-                <div class="stat-label">Students in Clubs</div>
-            </div>
-        </div>
-
-        <!-- ── Module 2 dashboard charts ── -->
-        <div class="dashboard-grid">
-            <div class="card">
-                <h3>Distribution of Students Across Clubs</h3>
-                <?php if ($clubDistribution && mysqli_num_rows($clubDistribution) > 0): ?>
-                    <div class="distribution-list">
-                        <?php while ($row = mysqli_fetch_assoc($clubDistribution)): ?>
-                            <?php $percent = ((int)$row['totalMembers'] / $maxMembers) * 100; ?>
-                            <div class="distribution-item">
-                                <div class="distribution-label">
-                                    <span><?= htmlspecialchars($row['ClubName']) ?></span>
-                                    <strong><?= (int)$row['totalMembers'] ?></strong>
-                                </div>
-                                <div class="distribution-track">
-                                    <div class="distribution-bar" style="width: <?= $percent ?>%;"></div>
-                                </div>
-                            </div>
-                        <?php endwhile; ?>
-                    </div>
-                <?php else: ?>
-                    <p class="muted-text">No club membership data available yet.</p>
-                <?php endif; ?>
-            </div>
-
-            <div class="card">
-                <h3>Club Operational Status</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Status</th>
-                            <th>Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    <?php if ($clubStatusSummary && mysqli_num_rows($clubStatusSummary) > 0): ?>
-                        <?php while ($row = mysqli_fetch_assoc($clubStatusSummary)): ?>
-                            <tr>
-                                <td>
-                                    <span class="badge <?= strtolower($row['ClubStatus']) === 'active' ? 'badge-active' : 'badge-inactive' ?>">
-                                        <?= ucfirst($row['ClubStatus']) ?>
-                                    </span>
-                                </td>
-                                <td><?= (int)$row['total'] ?></td>
-                            </tr>
-                        <?php endwhile; ?>
-                    <?php else: ?>
-                        <tr><td colspan="2" style="text-align:center; color:#999;">No club status data.</td></tr>
-                    <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
->>>>>>> 0601bc1c42d79e127dc0f1f0b317c1ad1963b0d2
         </div>
 
         <!-- ── Recently registered students ── -->
         <div class="card">
             <h3>Recently Registered Students</h3>
             <table>
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-
->>>>>>> 2f56a39d48beca8d7135299cdf5b0c25cb0e7999
-=======
->>>>>>> 0601bc1c42d79e127dc0f1f0b317c1ad1963b0d2
                 <thead>
                     <tr>
                         <th>Name</th>
@@ -366,13 +175,6 @@ $activePage = 'dashboard';
                         <th>Programme</th>
                     </tr>
                 </thead>
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-
->>>>>>> 2f56a39d48beca8d7135299cdf5b0c25cb0e7999
-=======
->>>>>>> 0601bc1c42d79e127dc0f1f0b317c1ad1963b0d2
                 <tbody>
                     <?php if ($recentStudents && mysqli_num_rows($recentStudents) > 0): ?>
                         <?php while ($row = mysqli_fetch_assoc($recentStudents)): ?>
@@ -382,8 +184,6 @@ $activePage = 'dashboard';
                                 <td><?= htmlspecialchars($row['Programme'] ?? '—') ?></td>
                             </tr>
                         <?php endwhile; ?>
-<<<<<<< HEAD
-<<<<<<< HEAD
                     <?php else: ?>
                         <tr><td colspan="3" style="text-align:center; color:#999;">No students registered yet.</td></tr>
                     <?php endif; ?>
@@ -395,26 +195,6 @@ $activePage = 'dashboard';
         <div class="card">
             <h3>Upcoming Events</h3>
             <table>
-=======
-
-=======
->>>>>>> 0601bc1c42d79e127dc0f1f0b317c1ad1963b0d2
-                    <?php else: ?>
-                        <tr><td colspan="3" style="text-align:center; color:#999;">No students registered yet.</td></tr>
-                    <?php endif; ?>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- ── Upcoming events ── -->
-        <div class="card">
-            <h3>Upcoming Events</h3>
-            <table>
-<<<<<<< HEAD
-
->>>>>>> 2f56a39d48beca8d7135299cdf5b0c25cb0e7999
-=======
->>>>>>> 0601bc1c42d79e127dc0f1f0b317c1ad1963b0d2
                 <thead>
                     <tr>
                         <th>Event Name</th>
@@ -423,13 +203,6 @@ $activePage = 'dashboard';
                         <th>Status</th>
                     </tr>
                 </thead>
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-
->>>>>>> 2f56a39d48beca8d7135299cdf5b0c25cb0e7999
-=======
->>>>>>> 0601bc1c42d79e127dc0f1f0b317c1ad1963b0d2
                 <tbody>
                     <?php if ($upcomingEvents && mysqli_num_rows($upcomingEvents) > 0): ?>
                         <?php while ($ev = mysqli_fetch_assoc($upcomingEvents)): ?>
@@ -437,8 +210,6 @@ $activePage = 'dashboard';
                                 <td><?= htmlspecialchars($ev['eventTitle']) ?></td>
                                 <td><?= htmlspecialchars($ev['ClubName']) ?></td>
                                 <td><?= htmlspecialchars($ev['eventDate']) ?></td>
-<<<<<<< HEAD
-<<<<<<< HEAD
                                 <td><span class="badge badge-pending"><?= ucfirst($ev['eventStatus']) ?></span></td>
                             </tr>
                         <?php endwhile; ?>
@@ -450,29 +221,5 @@ $activePage = 'dashboard';
         </div>
     </main>
 </div>
-=======
-                                <td>
-                                    <span class="badge badge-pending">
-                                        <?= ucfirst($ev['eventStatus']) ?>
-                                    </span>
-                                </td>
-=======
-                                <td><span class="badge badge-pending"><?= ucfirst($ev['eventStatus']) ?></span></td>
->>>>>>> 0601bc1c42d79e127dc0f1f0b317c1ad1963b0d2
-                            </tr>
-                        <?php endwhile; ?>
-                    <?php else: ?>
-                        <tr><td colspan="4" style="text-align:center; color:#999;">No upcoming events.</td></tr>
-                    <?php endif; ?>
-                </tbody>
-            </table>
-        </div>
-    </main>
-</div>
-<<<<<<< HEAD
-
->>>>>>> 2f56a39d48beca8d7135299cdf5b0c25cb0e7999
-=======
->>>>>>> 0601bc1c42d79e127dc0f1f0b317c1ad1963b0d2
 </body>
 </html>
