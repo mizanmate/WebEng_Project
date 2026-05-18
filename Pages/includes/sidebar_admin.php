@@ -50,6 +50,10 @@ $active = $activePage ?? '';
         <a href="adminViewUser.php"     class="<?= $active === 'view_users'    ? 'active' : '' ?>">View Users</a>
         <a href="adminEditUser.php"     class="<?= $active === 'edit_user'     ? 'active' : '' ?>">Edit User</a>
 
+        <span class="sidebar-section-label">Module 2</span>
+        <a href="adminClubManagement.php" class="<?= $active === 'club_management' ? 'active' : '' ?>">Manage Clubs</a>
+        <a href="adminCommitteeManagement.php" class="<?= $active === 'committee_management' ? 'active' : '' ?>">Manage Committees</a>
+
         <!-- Teammates: add your admin links below this line -->
     </nav>
 

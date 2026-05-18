@@ -30,6 +30,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['leave_club_id'])) {
     mysqli_stmt_execute($del);
 
     if (mysqli_stmt_affected_rows($del) > 0) {
+        // If the student was also a committee member, remove that extra privilege too.
+        $delCommittee = mysqli_prepare($link, 'DELETE FROM ClubCommitee WHERE userID = ? AND clubID = ?');
+        mysqli_stmt_bind_param($delCommittee, 'ss', $userID, $leaveClubID);
+        mysqli_stmt_execute($delCommittee);
+
         $success = 'You have left the club.';
     } else {
         $error = 'Could not leave that club.';
