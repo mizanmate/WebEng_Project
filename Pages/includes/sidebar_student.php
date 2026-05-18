@@ -12,11 +12,15 @@
 //  2. Replace a placeholder <a> tag with your real link, e.g.:
 //       BEFORE:
 <<<<<<< HEAD
+<<<<<<< HEAD
 // //
 =======
 //         <a href="#" class="sidebar-placeholder">Module 2 (coming soon)</a>
 //
 >>>>>>> 2f56a39d48beca8d7135299cdf5b0c25cb0e7999
+=======
+// //
+>>>>>>> 0601bc1c42d79e127dc0f1f0b317c1ad1963b0d2
 //       AFTER:
 //         <a href="YourPage.php"
 //            class="<?= $active === 'your_key' ? 'active' : '' ? >">
@@ -33,6 +37,9 @@ $active = $activePage ?? '';
 $hasPic = !empty($sidebarUser['Studphoto']);
 $picSrc = $hasPic ? '../uploads/' . htmlspecialchars($sidebarUser['Studphoto']) : '';
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 0601bc1c42d79e127dc0f1f0b317c1ad1963b0d2
 
 // Committee is not a separate login role. It is an extra privilege for students
 // who have a record in ClubCommitee. This keeps normal student access intact.
@@ -46,8 +53,11 @@ if (isset($link, $_SESSION['UserID'])) {
         $isCommitteeUser = mysqli_stmt_num_rows($committeeStmt) > 0;
     }
 }
+<<<<<<< HEAD
 =======
 >>>>>>> 2f56a39d48beca8d7135299cdf5b0c25cb0e7999
+=======
+>>>>>>> 0601bc1c42d79e127dc0f1f0b317c1ad1963b0d2
 ?>
 <aside class="sidebar">
 
@@ -66,26 +76,36 @@ if (isset($link, $_SESSION['UserID'])) {
         <?php endif; ?>
         <p class="user-name"><?= htmlspecialchars($_SESSION['name']) ?></p>
 <<<<<<< HEAD
+<<<<<<< HEAD
         <p class="user-role"><?= $isCommitteeUser ? 'Student / Committee' : 'Student' ?></p>
 =======
         <p class="user-role">Student</p>
 >>>>>>> 2f56a39d48beca8d7135299cdf5b0c25cb0e7999
+=======
+        <p class="user-role"><?= $isCommitteeUser ? 'Student / Committee' : 'Student' ?></p>
+>>>>>>> 0601bc1c42d79e127dc0f1f0b317c1ad1963b0d2
     </div>
 
     <!-- ── Module 1 navigation ── -->
     <nav class="sidebar-nav">
         <a href="studDash.php"       class="<?= $active === 'dashboard'   ? 'active' : '' ?>">Dashboard</a>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 0601bc1c42d79e127dc0f1f0b317c1ad1963b0d2
         <a href="StudClubDirectory.php" class="<?= $active === 'club_directory' ? 'active' : '' ?>">Club Directory</a>
         <a href="StudManageClub.php" class="<?= $active === 'manage_club' ? 'active' : '' ?>">Manage Club</a>
         <a href="StudJoinClub.php"   class="<?= $active === 'join_club'   ? 'active' : '' ?>">Join Club</a>
         <?php if ($isCommitteeUser): ?>
             <a href="committeeDash.php" class="<?= $active === 'committee_dashboard' ? 'active' : '' ?>">Committee Dashboard</a>
         <?php endif; ?>
+<<<<<<< HEAD
 =======
         <a href="StudManageClub.php" class="<?= $active === 'manage_club' ? 'active' : '' ?>">Manage Club</a>
         <a href="StudJoinClub.php"   class="<?= $active === 'join_club'   ? 'active' : '' ?>">Join Club</a>
 >>>>>>> 2f56a39d48beca8d7135299cdf5b0c25cb0e7999
+=======
+>>>>>>> 0601bc1c42d79e127dc0f1f0b317c1ad1963b0d2
         <a href="viewProfile.php"    class="<?= $active === 'profile'     ? 'active' : '' ?>">View Profile</a>
     </nav>
 
@@ -95,9 +115,12 @@ if (isset($link, $_SESSION['UserID'])) {
 
         <!-- Replace href="#" and class with your real page and active key -->
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
         <a href="#" class="sidebar-placeholder">Module 2 (coming soon)</a>
 >>>>>>> 2f56a39d48beca8d7135299cdf5b0c25cb0e7999
+=======
+>>>>>>> 0601bc1c42d79e127dc0f1f0b317c1ad1963b0d2
         <a href="#" class="sidebar-placeholder">Module 3 (coming soon)</a>
     </div>
 

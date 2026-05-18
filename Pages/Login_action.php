@@ -49,6 +49,9 @@ if ($result && mysqli_num_rows($result) === 1) {
                 $_SESSION['StudentID'] = $srow['StudentID'];
             }
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 0601bc1c42d79e127dc0f1f0b317c1ad1963b0d2
 
             // Committee members are still students, but they receive an extra dashboard link.
             $c = mysqli_prepare($link,
@@ -58,8 +61,11 @@ if ($result && mysqli_num_rows($result) === 1) {
             mysqli_stmt_execute($c);
             mysqli_stmt_store_result($c);
             $_SESSION['is_committee'] = mysqli_stmt_num_rows($c) > 0;
+<<<<<<< HEAD
 =======
 >>>>>>> 2f56a39d48beca8d7135299cdf5b0c25cb0e7999
+=======
+>>>>>>> 0601bc1c42d79e127dc0f1f0b317c1ad1963b0d2
         }
 
         session_write_close();
