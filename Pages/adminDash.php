@@ -20,6 +20,28 @@ $activeClubs   = mysqli_fetch_row(mysqli_query($link, "SELECT COUNT(*) FROM Club
 $totalEvents   = mysqli_fetch_row(mysqli_query($link, "SELECT COUNT(*) FROM Event"))[0];
 $totalCommitteeMembers = mysqli_fetch_row(mysqli_query($link, "SELECT COUNT(DISTINCT userID) FROM ClubCommitee"))[0];
 $totalClubInvolvement  = mysqli_fetch_row(mysqli_query($link, "SELECT COUNT(DISTINCT userID) FROM ClubMembership"))[0];
+$totalRegistrations = mysqli_fetch_row(
+    mysqli_query(
+        $link,
+        "SELECT COUNT(*) FROM Registration"
+    )
+)[0];
+
+$totalCompletedEvents = mysqli_fetch_row(
+    mysqli_query(
+        $link,
+        "SELECT COUNT(*) FROM Event
+         WHERE eventStatus='completed'"
+    )
+)[0];
+
+$totalUpcomingEvents = mysqli_fetch_row(
+    mysqli_query(
+        $link,
+        "SELECT COUNT(*) FROM Event
+         WHERE eventStatus='upcoming'"
+    )
+)[0];
 
 // ── Recent students ───────────────────────────────────────────
 $recentStudents = mysqli_query($link,
@@ -38,6 +60,31 @@ $upcomingEvents = mysqli_query($link,
      WHERE  e.eventStatus = 'upcoming' OR e.eventDate >= CURDATE()
      ORDER  BY e.eventDate ASC
      LIMIT  5"
+);
+
+$clubOverview = mysqli_query(
+    $link,
+    "SELECT
+
+        c.ClubName,
+
+        COUNT(DISTINCT cm.memberID)
+        AS totalMembers,
+
+        COUNT(DISTINCT cc.committeeID)
+        AS totalCommittees
+
+     FROM Club c
+
+     LEFT JOIN ClubMembership cm
+     ON cm.clubID = c.ClubID
+
+     LEFT JOIN ClubCommitee cc
+     ON cc.clubID = c.ClubID
+
+     GROUP BY c.ClubID
+
+     ORDER BY c.ClubName"
 );
 
 // ── Module 2 chart data: distribution of students across clubs ─
@@ -81,6 +128,19 @@ $activePage = 'dashboard';
         <div class="quick-actions">
             <a href="adminClubManagement.php" class="btn btn-primary btn-sm">Manage Clubs</a>
             <a href="adminCommitteeManagement.php" class="btn btn-secondary btn-sm">Manage Committees</a>
+            <a href="adminEventList.php"
+            class="btn btn-primary btn-sm">
+
+            View Events
+
+            </a>
+
+            <a href="adminEventAnalytics.php"
+            class="btn btn-secondary btn-sm">
+
+            Event Analytics
+
+            </a>
         </div>
 
         <!-- ── Stats row ── -->
@@ -108,6 +168,20 @@ $activePage = 'dashboard';
             <div class="stat-card">
                 <div class="stat-number"><?= (int)$totalClubInvolvement ?></div>
                 <div class="stat-label">Students in Clubs</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number"><?= (int)$totalRegistrations ?></div>
+                <div class="stat-label">Event Registrations</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-number"><?= (int)$totalUpcomingEvents ?></div>
+                <div class="stat-label">Upcoming Events</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-number"><?= (int)$totalCompletedEvents ?></div>
+                <div class="stat-label">Completed Events</div>
             </div>
         </div>
 
@@ -219,6 +293,50 @@ $activePage = 'dashboard';
                 </tbody>
             </table>
         </div>
+
+        <div class="card">
+
+        <h3>Club Overview</h3>
+
+        <table>
+
+            <thead>
+
+            <tr>
+                <th>Club Name</th>
+                <th>Total Members</th>
+                <th>Total Committees</th>
+            </tr>
+
+            </thead>
+
+            <tbody>
+
+            <?php while($club = mysqli_fetch_assoc($clubOverview)): ?>
+
+                <tr>
+
+                    <td>
+                        <?= htmlspecialchars($club['ClubName']) ?>
+                    </td>
+
+                    <td>
+                        <?= $club['totalMembers'] ?>
+                    </td>
+
+                    <td>
+                        <?= $club['totalCommittees'] ?>
+                    </td>
+
+                </tr>
+
+            <?php endwhile; ?>
+
+            </tbody>
+
+        </table>
+
+    </div>
     </main>
 </div>
 </body>
