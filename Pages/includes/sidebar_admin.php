@@ -53,8 +53,18 @@ $active = $activePage ?? '';
         <span class="sidebar-section-label">Module 2</span>
         <a href="adminClubManagement.php" class="<?= $active === 'club_management' ? 'active' : '' ?>">Manage Clubs</a>
         <a href="adminCommitteeManagement.php" class="<?= $active === 'committee_management' ? 'active' : '' ?>">Manage Committees</a>
+            <li>
+        <a href="adminEventList.php">
+            Event Management
+        </a>
+        </li>
 
-        <!-- Teammates: add your admin links below this line -->
+        <li>
+            <a href="adminEventAnalytics.php">
+                Event Analytics
+            </a>
+        </li>
+            <!-- Teammates: add your admin links below this line -->
     </nav>
 
     <!-- ── Logout ── -->
