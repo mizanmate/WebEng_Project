@@ -20,7 +20,7 @@ if ($eventID === '') {
 /* Sidebar */
 $stmt = mysqli_prepare(
     $link,
-    'SELECT Studphoto FROM Student WHERE UserID = ?'
+    'SELECT Studphoto FROM student WHERE UserID = ?'
 );
 mysqli_stmt_bind_param($stmt,'s',$userID);
 mysqli_stmt_execute($stmt);
@@ -37,9 +37,9 @@ $stmt = mysqli_prepare(
         s.Email,
         s.Phone
 
-     FROM Student s
+     FROM student s
 
-     JOIN Login l
+     JOIN login l
      ON l.UserID = s.UserID
 
      WHERE s.UserID = ?"
@@ -59,9 +59,9 @@ $stmt = mysqli_prepare(
         e.*,
         c.ClubName
 
-     FROM Event e
+     FROM event e
 
-     JOIN Club c
+     JOIN club c
      ON c.ClubID = e.ClubID
 
      WHERE e.eventID = ?"
@@ -96,7 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $chk = mysqli_prepare(
             $link,
             "SELECT registrationID
-             FROM Registration
+             FROM registration
              WHERE studentID = ?
              AND eventID = ?"
         );
@@ -123,7 +123,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 mysqli_query(
                     $link,
                     "SELECT COUNT(*)
-                     FROM Registration
+                     FROM registration
                      WHERE eventID = '$eventID'
                      AND registrationStatus='Registered'"
                 );
@@ -145,7 +145,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 mysqli_fetch_row(
                     mysqli_query(
                         $link,
-                        "SELECT COUNT(*) FROM Registration"
+                        "SELECT COUNT(*) FROM registration"
                     )
                 );
 
@@ -160,7 +160,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $stmt = mysqli_prepare(
                 $link,
-                "INSERT INTO Registration
+                "INSERT INTO registration
                 (
                     registrationID,
                     studentID,

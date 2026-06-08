@@ -19,7 +19,7 @@ $userID = $_SESSION['UserID'];
 $stmt = mysqli_prepare(
     $link,
     "SELECT clubID
-     FROM ClubCommitee
+     FROM clubcommitee
      WHERE userID = ?"
 );
 
@@ -46,7 +46,7 @@ $events = mysqli_query(
         eventID,
         eventTitle
 
-     FROM Event
+     FROM event
 
      WHERE ClubID='$clubID'
 
@@ -72,9 +72,9 @@ if ($selectedEvent != '') {
             r.registrationStatus,
             r.registrationDate
 
-         FROM Registration r
+         FROM registration r
 
-         JOIN Student s
+         JOIN student s
          ON r.studentID = s.StudentID
 
          WHERE r.eventID='$selectedEvent'

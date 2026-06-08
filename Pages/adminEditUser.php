@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // ── Delete user ──
     if ($action === 'delete' && $targetID !== '') {
-        $del = mysqli_prepare($link, "DELETE FROM Login WHERE UserID = ? AND role != 'admin'");
+        $del = mysqli_prepare($link, "DELETE FROM login WHERE UserID = ? AND role != 'admin'");
         mysqli_stmt_bind_param($del, 's', $targetID);
         mysqli_stmt_execute($del);
 
@@ -63,13 +63,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             if (!$error) {
-                $updLogin = mysqli_prepare($link, 'UPDATE Login SET name = ? WHERE UserID = ?');
+                $updLogin = mysqli_prepare($link, 'UPDATE login SET name = ? WHERE UserID = ?');
                 mysqli_stmt_bind_param($updLogin, 'ss', $name, $targetID);
                 mysqli_stmt_execute($updLogin);
 
                 if ($picFilename) {
                     $updStud = mysqli_prepare($link,
-                        'UPDATE Student SET Programme=?, StudYear=?, Email=?, Phone=?, Studphoto=?
+                        'UPDATE student SET Programme=?, StudYear=?, Email=?, Phone=?, Studphoto=?
                          WHERE UserID=?'
                     );
                     mysqli_stmt_bind_param($updStud, 'ssssss',
@@ -77,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     );
                 } else {
                     $updStud = mysqli_prepare($link,
-                        'UPDATE Student SET Programme=?, StudYear=?, Email=?, Phone=? WHERE UserID=?'
+                        'UPDATE student SET Programme=?, StudYear=?, Email=?, Phone=? WHERE UserID=?'
                     );
                     mysqli_stmt_bind_param($updStud, 'sssss',
                         $programme, $year, $email, $phone, $targetID
@@ -100,9 +100,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $today = date('Y-m-d');
 
-            // Upsert into ClubCommitee
+            // Upsert into clubcommitee
             $chk = mysqli_prepare($link,
-                'SELECT committeeID FROM ClubCommitee WHERE userID = ? AND clubID = ?'
+                'SELECT committeeID FROM clubcommitee WHERE userID = ? AND clubID = ?'
             );
             mysqli_stmt_bind_param($chk, 'ss', $targetID, $clubID);
             mysqli_stmt_execute($chk);
@@ -111,16 +111,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($chkRes && mysqli_num_rows($chkRes) > 0) {
                 $existing = mysqli_fetch_assoc($chkRes);
                 $upd = mysqli_prepare($link,
-                    'UPDATE ClubCommitee SET commiteePosition=?, CommiteeAssignDate=?
+                    'UPDATE clubcommitee SET commiteePosition=?, CommiteeAssignDate=?
                      WHERE committeeID=?'
                 );
                 mysqli_stmt_bind_param($upd, 'sss', $position, $today, $existing['committeeID']);
                 mysqli_stmt_execute($upd);
             } else {
-                $cntRow = mysqli_fetch_row(mysqli_query($link, 'SELECT COUNT(*) FROM ClubCommitee'));
+                $cntRow = mysqli_fetch_row(mysqli_query($link, 'SELECT COUNT(*) FROM clubcommitee'));
                 $commID = 'COM' . str_pad((int)$cntRow[0] + 1, 4, '0', STR_PAD_LEFT);
                 $ins    = mysqli_prepare($link,
-                    'INSERT INTO ClubCommitee
+                    'INSERT INTO clubcommitee
                         (committeeID, userID, clubID, commiteePosition, CommiteeAssignDate)
                      VALUES (?, ?, ?, ?, ?)'
                 );
@@ -130,7 +130,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Promote clubRole in ClubMembership
             $updMem = mysqli_prepare($link,
-                "UPDATE ClubMembership SET clubRole = 'Committee' WHERE userID = ? AND clubID = ?"
+                "UPDATE clubmembership SET clubRole = 'Committee' WHERE userID = ? AND clubID = ?"
             );
             mysqli_stmt_bind_param($updMem, 'ss', $targetID, $clubID);
             mysqli_stmt_execute($updMem);
@@ -144,13 +144,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $clubID = trim($_POST['revoke_club_id'] ?? '');
 
         $del = mysqli_prepare($link,
-            'DELETE FROM ClubCommitee WHERE userID = ? AND clubID = ?'
+            'DELETE FROM clubcommitee WHERE userID = ? AND clubID = ?'
         );
         mysqli_stmt_bind_param($del, 'ss', $targetID, $clubID);
         mysqli_stmt_execute($del);
 
         $updMem = mysqli_prepare($link,
-            "UPDATE ClubMembership SET clubRole = 'Member' WHERE userID = ? AND clubID = ?"
+            "UPDATE clubmembership SET clubRole = 'Member' WHERE userID = ? AND clubID = ?"
         );
         mysqli_stmt_bind_param($updMem, 'ss', $targetID, $clubID);
         mysqli_stmt_execute($updMem);
@@ -168,8 +168,8 @@ if ($search !== '') {
     $q = mysqli_prepare($link,
         'SELECT l.name, s.StudentID, s.UserID, s.Programme, s.StudYear,
                 s.Email, s.Phone, s.Studphoto
-         FROM   Student s
-         JOIN   Login   l ON l.UserID = s.UserID
+         FROM student s
+         JOIN login   l ON l.UserID = s.UserID
          WHERE  s.StudentID = ?'
     );
     mysqli_stmt_bind_param($q, 's', $search);
@@ -183,9 +183,9 @@ if ($search !== '') {
         $memStmt = mysqli_prepare($link,
             "SELECT c.ClubID, c.ClubName, cm.clubRole,
                     cc.commiteePosition, cc.CommiteeAssignDate
-             FROM   ClubMembership cm
-             JOIN   Club         c  ON c.ClubID  = cm.clubID
-             LEFT   JOIN ClubCommitee cc
+             FROM clubmembership cm
+             JOIN club         c  ON c.ClubID  = cm.clubID
+             LEFT   JOIN clubcommitee cc
                     ON cc.userID = cm.userID AND cc.clubID = cm.clubID
              WHERE  cm.userID = ?
              ORDER  BY c.ClubName ASC"

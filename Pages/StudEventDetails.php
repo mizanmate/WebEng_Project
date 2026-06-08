@@ -20,7 +20,7 @@ if ($eventID === '') {
 /* Sidebar */
 $stmt = mysqli_prepare(
     $link,
-    'SELECT Studphoto FROM Student WHERE UserID = ?'
+    'SELECT Studphoto FROM student WHERE UserID = ?'
 );
 mysqli_stmt_bind_param($stmt, 's', $userID);
 mysqli_stmt_execute($stmt);
@@ -33,12 +33,12 @@ SELECT
     c.ClubName,
     COUNT(r.registrationID) AS total_registered
 
-FROM Event e
+FROM event e
 
-JOIN Club c
+JOIN club c
 ON c.ClubID = e.ClubID
 
-LEFT JOIN Registration r
+LEFT JOIN registration r
 ON r.eventID = e.eventID
 
 WHERE e.eventID = ?

@@ -15,7 +15,7 @@ $userID = $_SESSION['UserID'];
 $stmt = mysqli_prepare(
     $link,
     "SELECT *
-     FROM Student
+     FROM student
      WHERE UserID = ?"
 );
 
@@ -36,7 +36,7 @@ mysqli_num_rows(
     mysqli_query(
         $link,
         "SELECT *
-         FROM Registration
+         FROM registration
          WHERE studentID='$studentID'
          AND registrationStatus='Registered'"
     )
@@ -47,7 +47,7 @@ mysqli_num_rows(
     mysqli_query(
         $link,
         "SELECT *
-         FROM Registration
+         FROM registration
          WHERE studentID='$studentID'
          AND registrationStatus='Waiting List'"
     )
@@ -58,7 +58,7 @@ mysqli_num_rows(
     mysqli_query(
         $link,
         "SELECT *
-         FROM Registration
+         FROM registration
          WHERE studentID='$studentID'
          AND registrationStatus='Completed'"
     )
@@ -78,9 +78,9 @@ mysqli_query(
         e.eventDate,
         e.eventVenue
 
-     FROM Registration r
+     FROM registration r
 
-     JOIN Event e
+     JOIN event e
      ON e.eventID = r.eventID
 
      WHERE r.studentID='$studentID'

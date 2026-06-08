@@ -11,7 +11,7 @@ require_once 'DB_connection.php';
 $userID = $_SESSION['UserID'];
 
 // Sidebar (Studphoto)
-$stmt = mysqli_prepare($link, 'SELECT Studphoto FROM Student WHERE UserID = ?');
+$stmt = mysqli_prepare($link, 'SELECT Studphoto FROM student WHERE UserID = ?');
 mysqli_stmt_bind_param($stmt, 's', $userID);
 mysqli_stmt_execute($stmt);
 $sidebarUser = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
@@ -19,8 +19,8 @@ $sidebarUser = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
 // Clubs the student has joined
 $myClubs = mysqli_prepare($link,
     "SELECT c.ClubName, c.ClubStatus
-     FROM   Club          c
-     JOIN   ClubMembership cm ON cm.clubID = c.ClubID
+     FROM club          c
+     JOIN clubmembership cm ON cm.clubID = c.ClubID
      WHERE  cm.userID = ?"
 );
 mysqli_stmt_bind_param($myClubs, 's', $userID);
@@ -30,9 +30,9 @@ $myClubsResult = mysqli_stmt_get_result($myClubs);
 // Events from those clubs
 $evStmt = mysqli_prepare($link,
     "SELECT DISTINCT e.eventTitle, c.ClubName, e.eventDate, e.eventStatus
-     FROM   Event         e
-     JOIN   Club          c  ON c.ClubID  = e.ClubID
-     JOIN   ClubMembership cm ON cm.clubID = e.ClubID
+     FROM event         e
+     JOIN club          c  ON c.ClubID  = e.ClubID
+     JOIN clubmembership cm ON cm.clubID = e.ClubID
      WHERE  cm.userID = ?
      ORDER  BY e.eventDate ASC"
 );

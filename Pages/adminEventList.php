@@ -26,13 +26,13 @@ c.ClubName,
 
 (
     SELECT COUNT(*)
-    FROM Registration r
+    FROM registration r
     WHERE r.eventID = e.eventID
 ) AS totalParticipants
 
-FROM Event e
+FROM event e
 
-JOIN Club c
+JOIN club c
 ON c.ClubID = e.ClubID
 
 WHERE 1=1

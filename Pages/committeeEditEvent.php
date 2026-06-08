@@ -28,12 +28,12 @@ $stmt = mysqli_prepare(
         e.*,
         c.ClubName
 
-     FROM Event e
+     FROM event e
 
-     JOIN Club c
+     JOIN club c
      ON e.ClubID = c.ClubID
 
-     JOIN ClubCommitee cc
+     JOIN clubcommitee cc
      ON cc.clubID = e.ClubID
 
      WHERE e.eventID = ?
@@ -63,7 +63,7 @@ if (!$event) {
 $success = '';
 $error = '';
 
-/* Update Event */
+/* Update event */
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
@@ -87,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $stmt = mysqli_prepare(
             $link,
-            "UPDATE Event
+            "UPDATE event
 
              SET
 
@@ -128,9 +128,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     e.*,
                     c.ClubName
 
-                 FROM Event e
+                 FROM event e
 
-                 JOIN Club c
+                 JOIN club c
                  ON e.ClubID = c.ClubID
 
                  WHERE e.eventID = ?"
@@ -397,7 +397,7 @@ Back
 type="submit"
 class="btn btn-primary">
 
-Update Event
+Update event
 
 </button>
 

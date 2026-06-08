@@ -14,18 +14,18 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 require_once 'DB_connection.php';
 
 // ── Main statistics ───────────────────────────────────────────
-$totalStudents = mysqli_fetch_row(mysqli_query($link, "SELECT COUNT(*) FROM Student"))[0];
-$totalClubs    = mysqli_fetch_row(mysqli_query($link, "SELECT COUNT(*) FROM Club"))[0];
-$activeClubs   = mysqli_fetch_row(mysqli_query($link, "SELECT COUNT(*) FROM Club WHERE ClubStatus = 'active'"))[0];
-$totalEvents   = mysqli_fetch_row(mysqli_query($link, "SELECT COUNT(*) FROM Event"))[0];
-$totalCommitteeMembers = mysqli_fetch_row(mysqli_query($link, "SELECT COUNT(DISTINCT userID) FROM ClubCommitee"))[0];
-$totalClubInvolvement  = mysqli_fetch_row(mysqli_query($link, "SELECT COUNT(DISTINCT userID) FROM ClubMembership"))[0];
+$totalStudents = mysqli_fetch_row(mysqli_query($link, "SELECT COUNT(*) FROM student"))[0];
+$totalClubs    = mysqli_fetch_row(mysqli_query($link, "SELECT COUNT(*) FROM club"))[0];
+$activeClubs   = mysqli_fetch_row(mysqli_query($link, "SELECT COUNT(*) FROM club WHERE ClubStatus = 'active'"))[0];
+$totalEvents   = mysqli_fetch_row(mysqli_query($link, "SELECT COUNT(*) FROM event"))[0];
+$totalCommitteeMembers = mysqli_fetch_row(mysqli_query($link, "SELECT COUNT(DISTINCT userID) FROM clubcommitee"))[0];
+$totalClubInvolvement  = mysqli_fetch_row(mysqli_query($link, "SELECT COUNT(DISTINCT userID) FROM clubmembership"))[0];
 
 // ── Recent students ───────────────────────────────────────────
 $recentStudents = mysqli_query($link,
     "SELECT l.name, s.StudentID, s.Programme
-     FROM   Student s
-     JOIN   Login   l ON l.UserID = s.UserID
+     FROM student s
+     JOIN login   l ON l.UserID = s.UserID
      ORDER  BY s.StudentID DESC
      LIMIT  5"
 );
@@ -33,8 +33,8 @@ $recentStudents = mysqli_query($link,
 // ── Upcoming events ───────────────────────────────────────────
 $upcomingEvents = mysqli_query($link,
     "SELECT e.eventTitle, c.ClubName, e.eventDate, e.eventStatus
-     FROM   Event e
-     JOIN   Club  c ON c.ClubID = e.ClubID
+     FROM event e
+     JOIN club  c ON c.ClubID = e.ClubID
      WHERE  e.eventStatus = 'upcoming' OR e.eventDate >= CURDATE()
      ORDER  BY e.eventDate ASC
      LIMIT  5"
@@ -43,8 +43,8 @@ $upcomingEvents = mysqli_query($link,
 // ── Module 2 chart data: distribution of students across clubs ─
 $clubDistribution = mysqli_query($link,
     "SELECT c.ClubName, COUNT(DISTINCT cm.userID) AS totalMembers
-     FROM Club c
-     LEFT JOIN ClubMembership cm ON cm.clubID = c.ClubID
+     FROM club c
+     LEFT JOIN clubmembership cm ON cm.clubID = c.ClubID
      GROUP BY c.ClubID, c.ClubName
      ORDER BY totalMembers DESC, c.ClubName ASC
      LIMIT 8"
@@ -53,7 +53,7 @@ $maxMembersRow = mysqli_fetch_row(mysqli_query($link,
     "SELECT COALESCE(MAX(member_count), 0)
      FROM (
         SELECT COUNT(DISTINCT userID) AS member_count
-        FROM ClubMembership
+        FROM clubmembership
         GROUP BY clubID
      ) AS club_counts"
 ));
@@ -61,7 +61,7 @@ $maxMembers = max(1, (int)($maxMembersRow[0] ?? 0));
 
 $clubStatusSummary = mysqli_query($link,
     "SELECT ClubStatus, COUNT(*) AS total
-     FROM Club
+     FROM club
      GROUP BY ClubStatus"
 );
 

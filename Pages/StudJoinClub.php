@@ -11,7 +11,7 @@ require_once 'DB_connection.php';
 $userID = $_SESSION['UserID'];
 
 // Sidebar
-$stmt = mysqli_prepare($link, 'SELECT Studphoto FROM Student WHERE UserID = ?');
+$stmt = mysqli_prepare($link, 'SELECT Studphoto FROM student WHERE UserID = ?');
 mysqli_stmt_bind_param($stmt, 's', $userID);
 mysqli_stmt_execute($stmt);
 $sidebarUser = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         // Check already a member
         $chk = mysqli_prepare($link,
-            'SELECT memberID FROM ClubMembership WHERE userID = ? AND clubID = ?'
+            'SELECT memberID FROM clubmembership WHERE userID = ? AND clubID = ?'
         );
         mysqli_stmt_bind_param($chk, 'ss', $userID, $clubID);
         mysqli_stmt_execute($chk);
@@ -38,12 +38,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = 'You are already a member of this club.';
         } else {
             // Generate memberID
-            $cntRow   = mysqli_fetch_row(mysqli_query($link, 'SELECT COUNT(*) FROM ClubMembership'));
+            $cntRow   = mysqli_fetch_row(mysqli_query($link, 'SELECT COUNT(*) FROM clubmembership'));
             $memberID = 'MBR' . str_pad((int)$cntRow[0] + 1, 4, '0', STR_PAD_LEFT);
             $today    = date('Y-m-d');
 
             $ins = mysqli_prepare($link,
-                'INSERT INTO ClubMembership (memberID, userID, clubID, RegistrationDate, clubRole)
+                'INSERT INTO clubmembership (memberID, userID, clubID, RegistrationDate, clubRole)
                  VALUES (?, ?, ?, ?, ?)'
             );
             $clubRole = 'Member';
@@ -60,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // ── Available clubs dropdown ───────────────────────────────────────────────
 $optStmt = mysqli_prepare($link,
-    "SELECT ClubID, ClubName FROM Club WHERE ClubStatus = 'active' ORDER BY ClubName ASC"
+    "SELECT ClubID, ClubName FROM club WHERE ClubStatus = 'active' ORDER BY ClubName ASC"
 );
 mysqli_stmt_execute($optStmt);
 $clubOptions = mysqli_stmt_get_result($optStmt);
@@ -69,8 +69,8 @@ $clubOptions = mysqli_stmt_get_result($optStmt);
 $allStmt = mysqli_prepare($link,
     "SELECT c.ClubID, c.ClubName, c.ClubDesc, c.ClubStatus,
             COUNT(cm.memberID) AS members
-     FROM   Club          c
-     LEFT   JOIN ClubMembership cm ON cm.clubID = c.ClubID
+     FROM club          c
+     LEFT   JOIN clubmembership cm ON cm.clubID = c.ClubID
      WHERE  c.ClubStatus = 'active'
      GROUP  BY c.ClubID
      ORDER  BY c.ClubName ASC"
@@ -79,7 +79,7 @@ mysqli_stmt_execute($allStmt);
 $allClubs = mysqli_stmt_get_result($allStmt);
 
 // ── Page meta ─────────────────────────────────────────────────────────────
-$pageTitle  = 'Join Club';
+$pageTitle  = 'Join club';
 $activePage = 'join_club';
 ?>
 <!DOCTYPE html>
@@ -93,7 +93,7 @@ $activePage = 'join_club';
 
     <main class="main-content">
 
-        <h2>Join Club</h2>
+        <h2>Join club</h2>
 
         <?php if ($success): ?>
             <div class="alert alert-success"><?= htmlspecialchars($success) ?></div>
@@ -121,7 +121,7 @@ $activePage = 'join_club';
 
                 <div class="btn-group">
                     <button type="reset"  class="btn btn-secondary">Clear</button>
-                    <button type="submit" class="btn btn-primary">Join Club</button>
+                    <button type="submit" class="btn btn-primary">Join club</button>
                 </div>
 
             </form>
