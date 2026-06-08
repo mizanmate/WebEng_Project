@@ -60,28 +60,16 @@ if (isset($link, $_SESSION['UserID'])) {
         <p class="user-role"><?= $isCommitteeUser ? 'Student / Committee' : 'Student' ?></p>
     </div>
 
-    <!-- ── Module navigation ── -->
+    <!-- ── Module 1 navigation ── -->
     <nav class="sidebar-nav">
         <a href="studDash.php"       class="<?= $active === 'dashboard'   ? 'active' : '' ?>">Dashboard</a>
         <a href="StudClubDirectory.php" class="<?= $active === 'club_directory' ? 'active' : '' ?>">Club Directory</a>
         <a href="StudManageClub.php" class="<?= $active === 'manage_club' ? 'active' : '' ?>">Manage Club</a>
         <a href="StudJoinClub.php"   class="<?= $active === 'join_club'   ? 'active' : '' ?>">Join Club</a>
-        <?php if(!empty($_SESSION['is_committee'])): ?>
-
-        <li class="<?= $activePage=='committee' ? 'active':'' ?>">
-
-            <a href="committeeDashboard.php">
-
-                Committee Dashboard
-
-            </a>
-
-        </li>
-
+        <?php if ($isCommitteeUser): ?>
+            <a href="committeeDash.php" class="<?= $active === 'committee_dashboard' ? 'active' : '' ?>">Committee Dashboard</a>
         <?php endif; ?>
         <a href="viewProfile.php"    class="<?= $active === 'profile'     ? 'active' : '' ?>">View Profile</a>
-        <a href="StudBrowseEvent.php" class="<?= $active === 'events' ? 'active' : '' ?>"> Events </a>
-        <a href="StudMyEvents.php" class="<?= $activePage === 'myevents' ? 'active' : '' ?>">My Events</a>
     </nav>
 
     <!-- ── Other Modules (teammates: add your links here) ── -->

@@ -7,9 +7,9 @@
 $link = mysqli_connect('localhost', 'root', '');
 if (!$link) die('Connection failed: ' . mysqli_connect_error());
 
-mysqli_query($link, 'CREATE DATABASE IF NOT EXISTS web_project')
+mysqli_query($link, 'CREATE DATABASE IF NOT EXISTS fkclubandeventmanagement')
     or die(mysqli_error($link));
-mysqli_select_db($link, 'web_project');
+mysqli_select_db($link, 'fkclubandeventmanagement');
 echo "Database ready.<br>";
 
 // ── Tables (all 11 from ERD) ────────────────────────────────────────────────
