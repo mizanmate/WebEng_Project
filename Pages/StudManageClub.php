@@ -11,7 +11,7 @@ require_once 'DB_connection.php';
 $userID = $_SESSION['UserID'];
 
 // Sidebar
-$stmt = mysqli_prepare($link, 'SELECT Studphoto FROM Student WHERE UserID = ?');
+$stmt = mysqli_prepare($link, 'SELECT Studphoto FROM student WHERE UserID = ?');
 mysqli_stmt_bind_param($stmt, 's', $userID);
 mysqli_stmt_execute($stmt);
 $sidebarUser = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
@@ -24,14 +24,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['leave_club_id'])) {
     $leaveClubID = trim($_POST['leave_club_id']);
 
     $del = mysqli_prepare($link,
-        'DELETE FROM ClubMembership WHERE userID = ? AND clubID = ?'
+        'DELETE FROM clubmembership WHERE userID = ? AND clubID = ?'
     );
     mysqli_stmt_bind_param($del, 'ss', $userID, $leaveClubID);
     mysqli_stmt_execute($del);
 
     if (mysqli_stmt_affected_rows($del) > 0) {
         // If the student was also a committee member, remove that extra privilege too.
-        $delCommittee = mysqli_prepare($link, 'DELETE FROM ClubCommitee WHERE userID = ? AND clubID = ?');
+        $delCommittee = mysqli_prepare($link, 'DELETE FROM clubcommitee WHERE userID = ? AND clubID = ?');
         mysqli_stmt_bind_param($delCommittee, 'ss', $userID, $leaveClubID);
         mysqli_stmt_execute($delCommittee);
 
@@ -44,8 +44,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['leave_club_id'])) {
 // ── My clubs ──────────────────────────────────────────────────────────────
 $clubStmt = mysqli_prepare($link,
     "SELECT c.ClubID, c.ClubName, c.ClubDesc, c.ClubStatus, cm.RegistrationDate, cm.clubRole
-     FROM   Club          c
-     JOIN   ClubMembership cm ON cm.clubID = c.ClubID
+     FROM club          c
+     JOIN clubmembership cm ON cm.clubID = c.ClubID
      WHERE  cm.userID = ?
      ORDER  BY cm.RegistrationDate DESC"
 );
@@ -56,9 +56,9 @@ $myClubs = mysqli_stmt_get_result($clubStmt);
 // ── Events from my clubs ───────────────────────────────────────────────────
 $evStmt = mysqli_prepare($link,
     "SELECT DISTINCT e.eventTitle, c.ClubName, e.eventDate, e.eventStatus
-     FROM   Event         e
-     JOIN   Club          c  ON c.ClubID  = e.ClubID
-     JOIN   ClubMembership cm ON cm.clubID = e.ClubID
+     FROM event         e
+     JOIN club          c  ON c.ClubID  = e.ClubID
+     JOIN clubmembership cm ON cm.clubID = e.ClubID
      WHERE  cm.userID = ?
      ORDER  BY e.eventDate ASC"
 );

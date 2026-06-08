@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'assig
         $error = 'Invalid committee position.';
     } else {
         // Ensure the student is also a club member. Committee is an extra privilege on top of student membership.
-        $chkMember = mysqli_prepare($link, 'SELECT memberID FROM ClubMembership WHERE userID = ? AND clubID = ?');
+        $chkMember = mysqli_prepare($link, 'SELECT memberID FROM clubmembership WHERE userID = ? AND clubID = ?');
         mysqli_stmt_bind_param($chkMember, 'ss', $userID, $clubID);
         mysqli_stmt_execute($chkMember);
         mysqli_stmt_store_result($chkMember);
@@ -50,19 +50,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'assig
             $memberID = next_id($link, 'ClubMembership', 'memberID', 'MBR', 4);
             $today = date('Y-m-d');
             $insMember = mysqli_prepare($link,
-                'INSERT INTO ClubMembership (memberID, userID, clubID, RegistrationDate, clubRole)
+                'INSERT INTO clubmembership (memberID, userID, clubID, RegistrationDate, clubRole)
                  VALUES (?, ?, ?, ?, ?)'
             );
             mysqli_stmt_bind_param($insMember, 'sssss', $memberID, $userID, $clubID, $today, $position);
             mysqli_stmt_execute($insMember);
         } else {
-            $updMember = mysqli_prepare($link, 'UPDATE ClubMembership SET clubRole = ? WHERE userID = ? AND clubID = ?');
+            $updMember = mysqli_prepare($link, 'UPDATE clubmembership SET clubRole = ? WHERE userID = ? AND clubID = ?');
             mysqli_stmt_bind_param($updMember, 'sss', $position, $userID, $clubID);
             mysqli_stmt_execute($updMember);
         }
 
         // Insert or update committee table.
-        $chkCommittee = mysqli_prepare($link, 'SELECT committeeID FROM ClubCommitee WHERE userID = ? AND clubID = ?');
+        $chkCommittee = mysqli_prepare($link, 'SELECT committeeID FROM clubcommitee WHERE userID = ? AND clubID = ?');
         mysqli_stmt_bind_param($chkCommittee, 'ss', $userID, $clubID);
         mysqli_stmt_execute($chkCommittee);
         $res = mysqli_stmt_get_result($chkCommittee);
@@ -71,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'assig
 
         if ($existing) {
             $upd = mysqli_prepare($link,
-                'UPDATE ClubCommitee
+                'UPDATE clubcommitee
                  SET commiteePosition = ?, CommiteeAssignDate = ?
                  WHERE committeeID = ?'
             );
@@ -84,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'assig
         } else {
             $committeeID = next_id($link, 'ClubCommitee', 'committeeID', 'CMT', 4);
             $ins = mysqli_prepare($link,
-                'INSERT INTO ClubCommitee (committeeID, userID, clubID, commiteePosition, CommiteeAssignDate)
+                'INSERT INTO clubcommitee (committeeID, userID, clubID, commiteePosition, CommiteeAssignDate)
                  VALUES (?, ?, ?, ?, ?)'
             );
             mysqli_stmt_bind_param($ins, 'sssss', $committeeID, $userID, $clubID, $position, $today);
@@ -106,13 +106,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'remov
     if ($committeeID === '') {
         $error = 'Invalid committee record.';
     } else {
-        $del = mysqli_prepare($link, 'DELETE FROM ClubCommitee WHERE committeeID = ?');
+        $del = mysqli_prepare($link, 'DELETE FROM clubcommitee WHERE committeeID = ?');
         mysqli_stmt_bind_param($del, 's', $committeeID);
 
         if (mysqli_stmt_execute($del) && mysqli_stmt_affected_rows($del) > 0) {
             if ($userID !== '' && $clubID !== '') {
                 $role = 'Member';
-                $updMember = mysqli_prepare($link, 'UPDATE ClubMembership SET clubRole = ? WHERE userID = ? AND clubID = ?');
+                $updMember = mysqli_prepare($link, 'UPDATE clubmembership SET clubRole = ? WHERE userID = ? AND clubID = ?');
                 mysqli_stmt_bind_param($updMember, 'sss', $role, $userID, $clubID);
                 mysqli_stmt_execute($updMember);
             }
@@ -126,15 +126,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'remov
 // ── Dropdown options ──────────────────────────────────────────────────────
 $students = mysqli_query($link,
     "SELECT s.UserID, s.StudentID, l.name
-     FROM Student s
-     JOIN Login l ON l.UserID = s.UserID
+     FROM student s
+     JOIN login l ON l.UserID = s.UserID
      WHERE COALESCE(s.status, 'active') <> 'inactive'
      ORDER BY l.name ASC"
 );
 
 $clubs = mysqli_query($link,
     "SELECT ClubID, ClubName, ClubStatus
-     FROM Club
+     FROM club
      ORDER BY ClubName ASC"
 );
 
@@ -142,10 +142,10 @@ $clubs = mysqli_query($link,
 $committees = mysqli_query($link,
     "SELECT cc.committeeID, cc.userID, cc.clubID, cc.commiteePosition, cc.CommiteeAssignDate,
             l.name, s.StudentID, c.ClubName, c.ClubStatus
-     FROM ClubCommitee cc
-     JOIN Login l ON l.UserID = cc.userID
-     JOIN Student s ON s.UserID = cc.userID
-     JOIN Club c ON c.ClubID = cc.clubID
+     FROM clubcommitee cc
+     JOIN login l ON l.UserID = cc.userID
+     JOIN student s ON s.UserID = cc.userID
+     JOIN club c ON c.ClubID = cc.clubID
      ORDER BY c.ClubName ASC,
               FIELD(cc.commiteePosition, 'President', 'Vice President', 'Secretary', 'Treasurer', 'Committee Member'),
               l.name ASC"

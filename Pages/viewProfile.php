@@ -14,8 +14,8 @@ $userID = $_SESSION['UserID'];
 $stmt = mysqli_prepare($link,
     'SELECT l.name, s.StudentID, s.Programme, s.StudYear,
             s.Email, s.Phone, s.Studphoto, s.totalPoints
-     FROM   Student s
-     JOIN   Login   l ON l.UserID = s.UserID
+     FROM student s
+     JOIN login   l ON l.UserID = s.UserID
      WHERE  s.UserID = ?'
 );
 mysqli_stmt_bind_param($stmt, 's', $userID);
@@ -26,8 +26,8 @@ $sidebarUser = $user; // sidebar reads 'Studphoto' from this
 // Clubs the student has joined
 $clubStmt = mysqli_prepare($link,
     "SELECT c.ClubName
-     FROM   Club          c
-     JOIN   ClubMembership cm ON cm.clubID = c.ClubID
+     FROM club          c
+     JOIN clubmembership cm ON cm.clubID = c.ClubID
      WHERE  cm.userID = ?
      ORDER  BY c.ClubName ASC"
 );

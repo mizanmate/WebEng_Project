@@ -2,7 +2,7 @@
 //      Requires these variables to be set BEFORE including:
 //      $activePage  (string) – key of the current page, e.g. 'dashboard'
 //      $sidebarUser (array)  – must contain 'Studphoto' key
-//                              (fetch from Student table WHERE UserID = session UserID)
+//                              (fetch from student table WHERE UserID = session UserID)
 //
 //
 // ================================================================
@@ -32,7 +32,7 @@ $picSrc = $hasPic ? '../uploads/' . htmlspecialchars($sidebarUser['Studphoto']) 
 // who have a record in ClubCommitee. This keeps normal student access intact.
 $isCommitteeUser = false;
 if (isset($link, $_SESSION['UserID'])) {
-    $committeeStmt = mysqli_prepare($link, 'SELECT committeeID FROM ClubCommitee WHERE userID = ? LIMIT 1');
+    $committeeStmt = mysqli_prepare($link, 'SELECT committeeID FROM clubcommitee WHERE userID = ? LIMIT 1');
     if ($committeeStmt) {
         mysqli_stmt_bind_param($committeeStmt, 's', $_SESSION['UserID']);
         mysqli_stmt_execute($committeeStmt);
@@ -65,7 +65,7 @@ if (isset($link, $_SESSION['UserID'])) {
         <a href="studDash.php"       class="<?= $active === 'dashboard'   ? 'active' : '' ?>">Dashboard</a>
         <a href="StudClubDirectory.php" class="<?= $active === 'club_directory' ? 'active' : '' ?>">Club Directory</a>
         <a href="StudManageClub.php" class="<?= $active === 'manage_club' ? 'active' : '' ?>">Manage Club</a>
-        <a href="StudJoinClub.php"   class="<?= $active === 'join_club'   ? 'active' : '' ?>">Join Club</a>
+        <a href="StudJoinClub.php"   class="<?= $active === 'join_club'   ? 'active' : '' ?>">Join club</a>
         <?php if ($isCommitteeUser): ?>
             <a href="committeeDash.php" class="<?= $active === 'committee_dashboard' ? 'active' : '' ?>">Committee Dashboard</a>
         <?php endif; ?>

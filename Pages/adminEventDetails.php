@@ -30,9 +30,9 @@ $stmt = mysqli_prepare(
         c.ClubName,
         c.AdvisorName
 
-     FROM Event e
+     FROM event e
 
-     JOIN Club c
+     JOIN club c
      ON c.ClubID = e.ClubID
 
      WHERE e.eventID = ?"
@@ -65,7 +65,7 @@ mysqli_fetch_row(
         $link,
         "SELECT COUNT(*)
 
-         FROM Registration
+         FROM registration
 
          WHERE eventID='$eventID'
 
@@ -79,7 +79,7 @@ mysqli_fetch_row(
         $link,
         "SELECT COUNT(*)
 
-         FROM Registration
+         FROM registration
 
          WHERE eventID='$eventID'
 
@@ -100,9 +100,9 @@ $participants = mysqli_query(
         r.registrationStatus,
         r.registrationDate
 
-     FROM Registration r
+     FROM registration r
 
-     JOIN Student s
+     JOIN student s
      ON s.StudentID = r.studentID
 
      WHERE r.eventID='$eventID'

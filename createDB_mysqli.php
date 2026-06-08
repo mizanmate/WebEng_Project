@@ -151,37 +151,37 @@ foreach ($tables as $sql) {
 }
 
 // ── Seed admin account ──────────────────────────────────────────────────────
-$check = mysqli_query($link, "SELECT UserID FROM Login WHERE role = 'admin' LIMIT 1");
+$check = mysqli_query($link, "SELECT UserID FROM login WHERE role = 'admin' LIMIT 1");
 if (mysqli_num_rows($check) === 0) {
     $pass = password_hash('admin123', PASSWORD_DEFAULT);
     mysqli_query($link,
-        "INSERT INTO Login (UserID, name, password, role)
+        "INSERT INTO login (UserID, name, password, role)
          VALUES ('ADMIN001', 'Administrator', '$pass', 'admin')"
     );
     mysqli_query($link,
-        "INSERT INTO Admin (UserID, department)
+        "INSERT INTO admin (UserID, department)
          VALUES ('ADMIN001', 'Administration')"
     );
     echo "Admin seeded — User ID: <strong>ADMIN001</strong>, password: <strong>admin123</strong><br>";
 }
 
 // ── Seed sample student account ─────────────────────────────────────────────
-$checkStud = mysqli_query($link, "SELECT UserID FROM Login WHERE role = 'student' LIMIT 1");
+$checkStud = mysqli_query($link, "SELECT UserID FROM login WHERE role = 'student' LIMIT 1");
 if (mysqli_num_rows($checkStud) === 0) {
     $pass2 = password_hash('student123', PASSWORD_DEFAULT);
     mysqli_query($link,
-        "INSERT INTO Login (UserID, name, password, role)
+        "INSERT INTO login (UserID, name, password, role)
          VALUES ('CA23001', 'Sample Student', '$pass2', 'student')"
     );
     mysqli_query($link,
-        "INSERT INTO Student (StudentID, UserID, StudentName, Programme, StudYear, Email, status, totalPoints)
+        "INSERT INTO student (StudentID, UserID, StudentName, Programme, StudYear, Email, status, totalPoints)
          VALUES ('CA23001', 'CA23001', 'Sample Student', 'Computer Science', 'Year 1', 'student@umpsa.edu.my', 'active', 0)"
     );
     echo "Sample student seeded — User ID: <strong>CA23001</strong>, password: <strong>student123</strong><br>";
 }
 
 // ── Seed sample clubs ───────────────────────────────────────────────────────
-$check2 = mysqli_query($link, 'SELECT ClubID FROM Club LIMIT 1');
+$check2 = mysqli_query($link, 'SELECT ClubID FROM club LIMIT 1');
 if (mysqli_num_rows($check2) === 0) {
     $today = date('Y-m-d');
     $clubs = [
@@ -195,7 +195,7 @@ if (mysqli_num_rows($check2) === 0) {
         $desc   = mysqli_real_escape_string($link, $desc);
         $advisor = mysqli_real_escape_string($link, $advisor);
         mysqli_query($link,
-            "INSERT INTO Club (ClubID, ClubName, ClubDesc, ClubCreated, AdvisorName, ClubStatus)
+            "INSERT INTO club (ClubID, ClubName, ClubDesc, ClubCreated, AdvisorName, ClubStatus)
              VALUES ('$id', '$name', '$desc', '$today', '$advisor', 'active')"
         );
     }

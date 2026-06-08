@@ -15,14 +15,14 @@ require_once 'DB_connection.php';
 $userID = $_SESSION['UserID'];
 
 // Sidebar profile photo
-$stmt = mysqli_prepare($link, 'SELECT Studphoto FROM Student WHERE UserID = ?');
+$stmt = mysqli_prepare($link, 'SELECT Studphoto FROM student WHERE UserID = ?');
 mysqli_stmt_bind_param($stmt, 's', $userID);
 mysqli_stmt_execute($stmt);
 $sidebarUser = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
 
 // Confirm committee access
 $accessStmt = mysqli_prepare($link,
-    'SELECT COUNT(*) AS total FROM ClubCommitee WHERE userID = ?'
+    'SELECT COUNT(*) AS total FROM clubcommitee WHERE userID = ?'
 );
 mysqli_stmt_bind_param($accessStmt, 's', $userID);
 mysqli_stmt_execute($accessStmt);
@@ -61,28 +61,28 @@ function scalar_query(mysqli $link, string $sql, string $userID): int
 }
 
 $managedClubs = scalar_query($link,
-    'SELECT COUNT(DISTINCT clubID) FROM ClubCommitee WHERE userID = ?',
+    'SELECT COUNT(DISTINCT clubID) FROM clubcommitee WHERE userID = ?',
     $userID
 );
 $totalMembers = scalar_query($link,
     'SELECT COUNT(DISTINCT cm.memberID)
-     FROM ClubMembership cm
-     JOIN ClubCommitee cc ON cc.clubID = cm.clubID
+     FROM clubmembership cm
+     JOIN clubcommitee cc ON cc.clubID = cm.clubID
      WHERE cc.userID = ?',
     $userID
 );
 $upcomingEvents = scalar_query($link,
     "SELECT COUNT(DISTINCT e.eventID)
-     FROM Event e
-     JOIN ClubCommitee cc ON cc.clubID = e.ClubID
+     FROM event e
+     JOIN clubcommitee cc ON cc.clubID = e.ClubID
      WHERE cc.userID = ? AND (e.eventStatus = 'upcoming' OR e.eventDate >= CURDATE())",
     $userID
 );
 $totalParticipants = scalar_query($link,
     'SELECT COUNT(DISTINCT r.registrationID)
-     FROM Registration r
-     JOIN Event e ON e.eventID = r.eventID
-     JOIN ClubCommitee cc ON cc.clubID = e.ClubID
+     FROM registration r
+     JOIN event e ON e.eventID = r.eventID
+     JOIN clubcommitee cc ON cc.clubID = e.ClubID
      WHERE cc.userID = ?',
     $userID
 );
@@ -91,10 +91,10 @@ $clubsStmt = mysqli_prepare($link,
     "SELECT c.ClubID, c.ClubName, c.ClubStatus, cc.commiteePosition,
             COUNT(DISTINCT cm.memberID) AS totalMembers,
             COUNT(DISTINCT e.eventID) AS totalEvents
-     FROM ClubCommitee cc
-     JOIN Club c ON c.ClubID = cc.clubID
-     LEFT JOIN ClubMembership cm ON cm.clubID = c.ClubID
-     LEFT JOIN Event e ON e.ClubID = c.ClubID
+     FROM clubcommitee cc
+     JOIN club c ON c.ClubID = cc.clubID
+     LEFT JOIN clubmembership cm ON cm.clubID = c.ClubID
+     LEFT JOIN event e ON e.ClubID = c.ClubID
      WHERE cc.userID = ?
      GROUP BY c.ClubID, c.ClubName, c.ClubStatus, cc.commiteePosition
      ORDER BY c.ClubName ASC"
@@ -106,10 +106,10 @@ $clubsManaged = mysqli_stmt_get_result($clubsStmt);
 $eventsStmt = mysqli_prepare($link,
     "SELECT e.eventTitle, c.ClubName, e.eventDate, e.eventTime, e.eventVenue, e.eventStatus,
             COUNT(DISTINCT r.registrationID) AS registrations
-     FROM Event e
-     JOIN Club c ON c.ClubID = e.ClubID
-     JOIN ClubCommitee cc ON cc.clubID = c.ClubID
-     LEFT JOIN Registration r ON r.eventID = e.eventID
+     FROM event e
+     JOIN club c ON c.ClubID = e.ClubID
+     JOIN clubcommitee cc ON cc.clubID = c.ClubID
+     LEFT JOIN registration r ON r.eventID = e.eventID
      WHERE cc.userID = ? AND (e.eventStatus = 'upcoming' OR e.eventDate >= CURDATE())
      GROUP BY e.eventID, e.eventTitle, c.ClubName, e.eventDate, e.eventTime, e.eventVenue, e.eventStatus
      ORDER BY e.eventDate ASC, e.eventTime ASC
@@ -121,11 +121,11 @@ $managedEvents = mysqli_stmt_get_result($eventsStmt);
 
 $participantsStmt = mysqli_prepare($link,
     "SELECT r.registrationDate, r.registrationStatus, e.eventTitle, c.ClubName, s.StudentName, s.StudentID
-     FROM Registration r
-     JOIN Event e ON e.eventID = r.eventID
-     JOIN Club c ON c.ClubID = e.ClubID
-     JOIN ClubCommitee cc ON cc.clubID = c.ClubID
-     JOIN Student s ON s.StudentID = r.studentID
+     FROM registration r
+     JOIN event e ON e.eventID = r.eventID
+     JOIN club c ON c.ClubID = e.ClubID
+     JOIN clubcommitee cc ON cc.clubID = c.ClubID
+     JOIN student s ON s.StudentID = r.studentID
      WHERE cc.userID = ?
      ORDER BY r.registrationDate DESC
      LIMIT 10"

@@ -19,14 +19,14 @@ require_once 'DB_connection.php';
 $totalEvents = mysqli_fetch_row(
     mysqli_query(
         $link,
-        "SELECT COUNT(*) FROM Event"
+        "SELECT COUNT(*) FROM event"
     )
 )[0];
 
 $totalRegistrations = mysqli_fetch_row(
     mysqli_query(
         $link,
-        "SELECT COUNT(*) FROM Registration"
+        "SELECT COUNT(*) FROM registration"
     )
 )[0];
 
@@ -34,7 +34,7 @@ $totalUpcoming = mysqli_fetch_row(
     mysqli_query(
         $link,
         "SELECT COUNT(*)
-         FROM Event
+         FROM event
          WHERE eventStatus='upcoming'"
     )
 )[0];
@@ -43,7 +43,7 @@ $totalCompleted = mysqli_fetch_row(
     mysqli_query(
         $link,
         "SELECT COUNT(*)
-         FROM Event
+         FROM event
          WHERE eventStatus='completed'"
     )
 )[0];
@@ -61,9 +61,9 @@ $popularEvents = mysqli_query(
         COUNT(r.registrationID)
         AS totalParticipants
 
-     FROM Event e
+     FROM event e
 
-     LEFT JOIN Registration r
+     LEFT JOIN registration r
      ON r.eventID = e.eventID
 
      GROUP BY e.eventID
@@ -86,9 +86,9 @@ $eventsByClub = mysqli_query(
         COUNT(e.eventID)
         AS totalEvents
 
-     FROM Club c
+     FROM club c
 
-     LEFT JOIN Event e
+     LEFT JOIN event e
      ON e.ClubID = c.ClubID
 
      GROUP BY c.ClubID
@@ -108,7 +108,7 @@ $registrationStatus = mysqli_query(
 
         COUNT(*) AS total
 
-     FROM Registration
+     FROM registration
 
      GROUP BY registrationStatus"
 );

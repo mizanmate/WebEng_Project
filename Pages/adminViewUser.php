@@ -18,10 +18,10 @@ if ($search !== '') {
     $q = mysqli_prepare($link,
         "SELECT l.name, s.StudentID, s.Programme, s.StudYear, s.Email, s.Phone, s.totalPoints,
                 GROUP_CONCAT(c.ClubName ORDER BY c.ClubName SEPARATOR ', ') AS clubs
-         FROM   Student       s
-         JOIN   Login         l  ON l.UserID  = s.UserID
-         LEFT   JOIN ClubMembership cm ON cm.userID = s.UserID
-         LEFT   JOIN Club          c  ON c.ClubID  = cm.clubID
+         FROM student       s
+         JOIN login         l  ON l.UserID  = s.UserID
+         LEFT   JOIN clubmembership cm ON cm.userID = s.UserID
+         LEFT   JOIN club          c  ON c.ClubID  = cm.clubID
          WHERE  s.StudentID = ?
          GROUP  BY s.StudentID"
     );
