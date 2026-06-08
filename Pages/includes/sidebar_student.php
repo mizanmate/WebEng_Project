@@ -70,15 +70,14 @@ if (isset($link, $_SESSION['UserID'])) {
             <a href="committeeDash.php" class="<?= $active === 'committee_dashboard' ? 'active' : '' ?>">Committee Dashboard</a>
         <?php endif; ?>
         <a href="viewProfile.php"    class="<?= $active === 'profile'     ? 'active' : '' ?>">View Profile</a>
+        <a href="StudBrowseEvent.php" class="<?= $active === 'browse_event' ? 'active' : '' ?>">Browse Events</a>
+        <a href="StudMyEvents.php" class="<?= $active === 'my_events' ? 'active' : '' ?>">My Events</a>
+
+        <?php if ($isCommitteeUser): ?>
+            <a href="committeeCreateEvent.php" class="<?= $active === 'create_event' ? 'active' : '' ?>">Create Event</a>
+            <a href="committeeManageEvent.php"class="<?= $active === 'manage_event' ? 'active' : '' ?>">Manage Events</a>
+        <?php endif; ?>
     </nav>
-
-    <!-- ── Other Modules (teammates: add your links here) ── -->
-    <div class="sidebar-modules">
-        <span class="sidebar-section-label">Other Modules</span>
-
-        <!-- Replace href="#" and class with your real page and active key -->
-        <a href="#" class="sidebar-placeholder">Module 3 (coming soon)</a>
-    </div>
 
     <!-- ── Logout ── -->
     <div class="sidebar-footer">
