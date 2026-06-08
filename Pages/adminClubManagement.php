@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delet
     if ($clubID === '') {
         $error = 'Invalid club selected.';
     } else {
-        $del = mysqli_prepare($link, 'DELETE FROM Club WHERE ClubID = ?');
+        $del = mysqli_prepare($link, 'DELETE FROM club WHERE ClubID = ?');
         mysqli_stmt_bind_param($del, 's', $clubID);
 
         if (mysqli_stmt_execute($del) && mysqli_stmt_affected_rows($del) > 0) {
@@ -66,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && in_array($_POST['action'] ?? '', ['
             $today = date('Y-m-d');
 
             $ins = mysqli_prepare($link,
-                'INSERT INTO Club (ClubID, ClubName, ClubDesc, ClubCreated, AdvisorName, ClubStatus)
+                'INSERT INTO club (ClubID, ClubName, ClubDesc, ClubCreated, AdvisorName, ClubStatus)
                  VALUES (?, ?, ?, ?, ?, ?)'
             );
             mysqli_stmt_bind_param($ins, 'ssssss', $newID, $clubName, $clubDesc, $today, $advisorName, $clubStatus);
@@ -81,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && in_array($_POST['action'] ?? '', ['
                 $error = 'Invalid club selected.';
             } else {
                 $upd = mysqli_prepare($link,
-                    'UPDATE Club
+                    'UPDATE club
                      SET ClubName = ?, ClubDesc = ?, AdvisorName = ?, ClubStatus = ?
                      WHERE ClubID = ?'
                 );
@@ -100,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && in_array($_POST['action'] ?? '', ['
 // ── Load club for editing ─────────────────────────────────────────────────
 if (isset($_GET['edit'])) {
     $editID = trim($_GET['edit']);
-    $stmt = mysqli_prepare($link, 'SELECT * FROM Club WHERE ClubID = ?');
+    $stmt = mysqli_prepare($link, 'SELECT * FROM club WHERE ClubID = ?');
     mysqli_stmt_bind_param($stmt, 's', $editID);
     mysqli_stmt_execute($stmt);
     $res = mysqli_stmt_get_result($stmt);
@@ -112,9 +112,9 @@ $clubs = mysqli_query($link,
     "SELECT c.ClubID, c.ClubName, c.ClubDesc, c.ClubCreated, c.AdvisorName, c.ClubStatus,
             COUNT(DISTINCT cm.memberID) AS totalMembers,
             COUNT(DISTINCT cc.committeeID) AS totalCommittees
-     FROM Club c
-     LEFT JOIN ClubMembership cm ON cm.clubID = c.ClubID
-     LEFT JOIN ClubCommitee cc ON cc.clubID = c.ClubID
+     FROM club c
+     LEFT JOIN clubmembership cm ON cm.clubID = c.ClubID
+     LEFT JOIN clubcommitee cc ON cc.clubID = c.ClubID
      GROUP BY c.ClubID, c.ClubName, c.ClubDesc, c.ClubCreated, c.AdvisorName, c.ClubStatus
      ORDER BY c.ClubName ASC"
 );
@@ -141,7 +141,7 @@ $activePage = 'club_management';
         <?php if ($error): ?><div class="alert alert-danger"><?= htmlspecialchars($error) ?></div><?php endif; ?>
 
         <div class="form-card form-card-wide">
-            <h3><?= $editClub ? 'Update Club' : 'Create New Club' ?></h3>
+            <h3><?= $editClub ? 'Update club' : 'Create New Club' ?></h3>
             <form method="post" action="adminClubManagement.php">
                 <input type="hidden" name="action" value="<?= $editClub ? 'update' : 'create' ?>">
                 <input type="hidden" name="club_id" value="<?= htmlspecialchars($editClub['ClubID'] ?? '') ?>">
@@ -181,7 +181,7 @@ $activePage = 'club_management';
                 </div>
 
                 <div class="btn-group">
-                    <button type="submit" class="btn btn-primary"><?= $editClub ? 'Update Club' : 'Create Club' ?></button>
+                    <button type="submit" class="btn btn-primary"><?= $editClub ? 'Update club' : 'Create Club' ?></button>
                     <?php if ($editClub): ?>
                         <a href="adminClubManagement.php" class="btn btn-secondary">Cancel Edit</a>
                     <?php else: ?>

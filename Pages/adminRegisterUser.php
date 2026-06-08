@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     } else {
         // Check for duplicate User ID
-        $dup = mysqli_prepare($link, 'SELECT UserID FROM Login WHERE UserID = ?');
+        $dup = mysqli_prepare($link, 'SELECT UserID FROM login WHERE UserID = ?');
         mysqli_stmt_bind_param($dup, 's', $userID);
         mysqli_stmt_execute($dup);
         mysqli_stmt_store_result($dup);
@@ -46,10 +46,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = 'User ID already exists.';
 
         } else {
-            // Insert into Login table
+            // Insert into login table
             $hashed = password_hash($password, PASSWORD_DEFAULT);
             $ins    = mysqli_prepare($link,
-                'INSERT INTO Login (UserID, name, password, role) VALUES (?, ?, ?, ?)'
+                'INSERT INTO login (UserID, name, password, role) VALUES (?, ?, ?, ?)'
             );
             mysqli_stmt_bind_param($ins, 'ssss', $userID, $name, $hashed, $role);
 
@@ -58,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Insert into role-specific table
                 if ($role === 'student') {
                     $ins2 = mysqli_prepare($link,
-                        'INSERT INTO Student
+                        'INSERT INTO student
                             (StudentID, UserID, StudentName, Programme, StudYear, Email, Phone)
                          VALUES (?, ?, ?, ?, ?, ?, ?)'
                     );
@@ -70,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 } else {
                     $dept = 'Administration';
                     $ins2 = mysqli_prepare($link,
-                        'INSERT INTO Admin (UserID, department) VALUES (?, ?)'
+                        'INSERT INTO admin (UserID, department) VALUES (?, ?)'
                     );
                     mysqli_stmt_bind_param($ins2, 'ss', $userID, $dept);
                     mysqli_stmt_execute($ins2);

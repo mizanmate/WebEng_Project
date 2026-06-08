@@ -19,9 +19,9 @@ $stmt = mysqli_prepare(
         c.ClubName,
         cc.commiteePosition
 
-     FROM ClubCommitee cc
+     FROM clubcommitee cc
 
-     JOIN Club c
+     JOIN club c
      ON c.ClubID = cc.clubID
 
      WHERE cc.userID = ?
@@ -70,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         mysqli_fetch_row(
             mysqli_query(
                 $link,
-                "SELECT COUNT(*) FROM Event"
+                "SELECT COUNT(*) FROM event"
             )
         );
 
@@ -85,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $stmt = mysqli_prepare(
             $link,
-            "INSERT INTO Event
+            "INSERT INTO event
             (
                 eventID,
                 ClubID,

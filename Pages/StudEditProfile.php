@@ -50,12 +50,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($newPass !== '') {
                 $hashed   = password_hash($newPass, PASSWORD_DEFAULT);
                 $updLogin = mysqli_prepare($link,
-                    'UPDATE Login SET name = ?, password = ? WHERE UserID = ?'
+                    'UPDATE login SET name = ?, password = ? WHERE UserID = ?'
                 );
                 mysqli_stmt_bind_param($updLogin, 'sss', $name, $hashed, $userID);
             } else {
                 $updLogin = mysqli_prepare($link,
-                    'UPDATE Login SET name = ? WHERE UserID = ?'
+                    'UPDATE login SET name = ? WHERE UserID = ?'
                 );
                 mysqli_stmt_bind_param($updLogin, 'ss', $name, $userID);
             }
@@ -64,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Update student record (with or without new photo)
             if ($picFilename) {
                 $updStud = mysqli_prepare($link,
-                    'UPDATE Student SET Programme=?, StudYear=?, Email=?, Phone=?, Studphoto=?
+                    'UPDATE student SET Programme=?, StudYear=?, Email=?, Phone=?, Studphoto=?
                      WHERE UserID=?'
                 );
                 mysqli_stmt_bind_param($updStud, 'ssssss',
@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 );
             } else {
                 $updStud = mysqli_prepare($link,
-                    'UPDATE Student SET Programme=?, StudYear=?, Email=?, Phone=? WHERE UserID=?'
+                    'UPDATE student SET Programme=?, StudYear=?, Email=?, Phone=? WHERE UserID=?'
                 );
                 mysqli_stmt_bind_param($updStud, 'sssss',
                     $programme, $year, $email, $phone, $userID
@@ -93,8 +93,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $stmt = mysqli_prepare($link,
     'SELECT l.name, s.StudentID, s.Programme, s.StudYear,
             s.Email, s.Phone, s.Studphoto
-     FROM   Student s
-     JOIN   Login   l ON l.UserID = s.UserID
+     FROM student s
+     JOIN login   l ON l.UserID = s.UserID
      WHERE  s.UserID = ?'
 );
 mysqli_stmt_bind_param($stmt, 's', $userID);

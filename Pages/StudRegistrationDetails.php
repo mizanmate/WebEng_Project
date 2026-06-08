@@ -32,12 +32,12 @@ $stmt = mysqli_prepare(
 
         c.ClubName
 
-     FROM Registration r
+     FROM registration r
 
-     JOIN Event e
+     JOIN event e
      ON r.eventID = e.eventID
 
-     JOIN Club c
+     JOIN club c
      ON e.ClubID = c.ClubID
 
      WHERE r.registrationID = ?"

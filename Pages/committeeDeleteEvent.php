@@ -27,9 +27,9 @@ $stmt = mysqli_prepare(
     $link,
     "SELECT e.eventID
 
-     FROM Event e
+     FROM event e
 
-     JOIN ClubCommitee cc
+     JOIN clubcommitee cc
      ON cc.clubID = e.ClubID
 
      WHERE e.eventID = ?
@@ -58,7 +58,7 @@ if (!mysqli_fetch_assoc($result)) {
 
 $stmt = mysqli_prepare(
     $link,
-    "DELETE FROM Event
+    "DELETE FROM event
      WHERE eventID = ?"
 );
 

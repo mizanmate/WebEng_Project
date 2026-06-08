@@ -14,7 +14,7 @@ require_once 'DB_connection.php';
 $userID = $_SESSION['UserID'];
 
 // Sidebar profile photo
-$stmt = mysqli_prepare($link, 'SELECT Studphoto FROM Student WHERE UserID = ?');
+$stmt = mysqli_prepare($link, 'SELECT Studphoto FROM student WHERE UserID = ?');
 mysqli_stmt_bind_param($stmt, 's', $userID);
 mysqli_stmt_execute($stmt);
 $sidebarUser = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
@@ -34,9 +34,9 @@ if ($search !== '') {
 $sql = "SELECT c.ClubID, c.ClubName, c.ClubDesc, c.AdvisorName, c.ClubCreated, c.ClubStatus,
                COUNT(DISTINCT cm.memberID) AS totalMembers,
                MAX(CASE WHEN mycm.userID IS NOT NULL THEN 1 ELSE 0 END) AS alreadyJoined
-        FROM Club c
-        LEFT JOIN ClubMembership cm ON cm.clubID = c.ClubID
-        LEFT JOIN ClubMembership mycm ON mycm.clubID = c.ClubID AND mycm.userID = ?
+        FROM club c
+        LEFT JOIN clubmembership cm ON cm.clubID = c.ClubID
+        LEFT JOIN clubmembership mycm ON mycm.clubID = c.ClubID AND mycm.userID = ?
         $whereSql
         GROUP BY c.ClubID, c.ClubName, c.ClubDesc, c.AdvisorName, c.ClubCreated, c.ClubStatus
         ORDER BY c.ClubName ASC";
@@ -52,8 +52,8 @@ function fetch_committee(mysqli $link, string $clubID): array
 {
     $stmt = mysqli_prepare($link,
         "SELECT l.name, cc.commiteePosition
-         FROM ClubCommitee cc
-         JOIN Login l ON l.UserID = cc.userID
+         FROM clubcommitee cc
+         JOIN login l ON l.UserID = cc.userID
          WHERE cc.clubID = ?
          ORDER BY FIELD(cc.commiteePosition, 'President', 'Vice President', 'Secretary', 'Treasurer', 'Committee Member'), l.name ASC"
     );
@@ -67,7 +67,7 @@ function fetch_events(mysqli $link, string $clubID, string $operator): array
     $today = date('Y-m-d');
     $stmt = mysqli_prepare($link,
         "SELECT eventTitle, eventDate, eventVenue, eventStatus
-         FROM Event
+         FROM event
          WHERE ClubID = ? AND eventDate $operator ?
          ORDER BY eventDate " . ($operator === '>=' ? 'ASC' : 'DESC') . "
          LIMIT 5"
@@ -119,7 +119,7 @@ $activePage = 'club_directory';
                             <?php if ((int)$club['alreadyJoined'] === 1): ?>
                                 <span class="badge badge-pending">Joined</span>
                             <?php else: ?>
-                                <a href="StudJoinClub.php" class="btn btn-primary btn-sm">Join Club</a>
+                                <a href="StudJoinClub.php" class="btn btn-primary btn-sm">Join club</a>
                             <?php endif; ?>
                         </div>
                     </div>

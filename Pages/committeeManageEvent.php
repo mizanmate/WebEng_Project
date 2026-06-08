@@ -19,7 +19,7 @@ $userID = $_SESSION['UserID'];
 $stmt = mysqli_prepare(
     $link,
     "SELECT clubID
-     FROM ClubCommitee
+     FROM clubcommitee
      WHERE userID = ?"
 );
 
@@ -53,7 +53,7 @@ $events = mysqli_query(
         (
             SELECT COUNT(*)
 
-            FROM Registration r
+            FROM registration r
 
             WHERE r.eventID = e.eventID
 
@@ -61,7 +61,7 @@ $events = mysqli_query(
 
         ) AS totalRegistered
 
-     FROM Event e
+     FROM event e
 
      WHERE e.ClubID='$clubID'
 

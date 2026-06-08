@@ -19,7 +19,7 @@ if ($username === '' || $password === '' || $role === '') {
 require_once 'DB_connection.php';
 
 $stmt = mysqli_prepare($link,
-    'SELECT UserID, name, password FROM Login WHERE UserID = ? AND role = ?'
+    'SELECT UserID, name, password FROM login WHERE UserID = ? AND role = ?'
 );
 mysqli_stmt_bind_param($stmt, 'ss', $username, $role);
 mysqli_stmt_execute($stmt);
@@ -39,7 +39,7 @@ if ($result && mysqli_num_rows($result) === 1) {
         // For students, also store StudentID
         if ($role === 'student') {
             $s = mysqli_prepare($link,
-                'SELECT StudentID FROM Student WHERE UserID = ?'
+                'SELECT StudentID FROM student WHERE UserID = ?'
             );
             mysqli_stmt_bind_param($s, 's', $user['UserID']);
             mysqli_stmt_execute($s);
@@ -51,7 +51,7 @@ if ($result && mysqli_num_rows($result) === 1) {
 
             // Committee members are still students, but they receive an extra dashboard link.
             $c = mysqli_prepare($link,
-                'SELECT committeeID FROM ClubCommitee WHERE userID = ? LIMIT 1'
+                'SELECT committeeID FROM clubcommitee WHERE userID = ? LIMIT 1'
             );
             mysqli_stmt_bind_param($c, 's', $user['UserID']);
             mysqli_stmt_execute($c);
