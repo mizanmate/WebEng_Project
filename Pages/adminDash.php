@@ -49,21 +49,43 @@ $clubDistribution = mysqli_query($link,
      ORDER BY totalMembers DESC, c.ClubName ASC
      LIMIT 8"
 );
-$maxMembersRow = mysqli_fetch_row(mysqli_query($link,
-    "SELECT COALESCE(MAX(member_count), 0)
-     FROM (
-        SELECT COUNT(DISTINCT userID) AS member_count
-        FROM clubmembership
-        GROUP BY clubID
-     ) AS club_counts"
-));
-$maxMembers = max(1, (int)($maxMembersRow[0] ?? 0));
+$clubChartLabels = [];
+$clubChartCounts = [];
+while ($row = mysqli_fetch_assoc($clubDistribution)) {
+    $clubChartLabels[] = $row['ClubName'];
+    $clubChartCounts[] = (int)$row['totalMembers'];
+}
 
 $clubStatusSummary = mysqli_query($link,
     "SELECT ClubStatus, COUNT(*) AS total
      FROM club
      GROUP BY ClubStatus"
 );
+$statusChartLabels = [];
+$statusChartCounts = [];
+$statusChartColors = [];
+$sColorMap = ['active' => '#27ae60', 'inactive' => '#e74c3c', 'suspended' => '#f39c12'];
+while ($row = mysqli_fetch_assoc($clubStatusSummary)) {
+    $statusChartLabels[] = ucfirst($row['ClubStatus']);
+    $statusChartCounts[] = (int)$row['total'];
+    $statusChartColors[] = $sColorMap[strtolower($row['ClubStatus'])] ?? '#95a5a6';
+}
+
+// ── Chart data: events by status ─────────────────────────────
+$evStatusRes = mysqli_query($link,
+    "SELECT eventStatus, COUNT(*) AS total FROM event
+     GROUP BY eventStatus
+     ORDER BY FIELD(eventStatus, 'upcoming', 'ongoing', 'completed')"
+);
+$evChartLabels = [];
+$evChartCounts = [];
+$evChartColors = [];
+$evColorMap = ['upcoming' => '#f39c12', 'ongoing' => '#27ae60', 'completed' => '#1a3c6e'];
+while ($row = mysqli_fetch_assoc($evStatusRes)) {
+    $evChartLabels[] = ucfirst($row['eventStatus']);
+    $evChartCounts[] = (int)$row['total'];
+    $evChartColors[] = $evColorMap[strtolower($row['eventStatus'])] ?? '#95a5a6';
+}
 
 $pageTitle  = 'Admin Dashboard';
 $activePage = 'dashboard';
@@ -115,20 +137,9 @@ $activePage = 'dashboard';
         <div class="dashboard-grid">
             <div class="card">
                 <h3>Distribution of Students Across Clubs</h3>
-                <?php if ($clubDistribution && mysqli_num_rows($clubDistribution) > 0): ?>
-                    <div class="distribution-list">
-                        <?php while ($row = mysqli_fetch_assoc($clubDistribution)): ?>
-                            <?php $percent = ((int)$row['totalMembers'] / $maxMembers) * 100; ?>
-                            <div class="distribution-item">
-                                <div class="distribution-label">
-                                    <span><?= htmlspecialchars($row['ClubName']) ?></span>
-                                    <strong><?= (int)$row['totalMembers'] ?></strong>
-                                </div>
-                                <div class="distribution-track">
-                                    <div class="distribution-bar" style="width: <?= $percent ?>%;"></div>
-                                </div>
-                            </div>
-                        <?php endwhile; ?>
+                <?php if (!empty($clubChartLabels)): ?>
+                    <div class="chart-bar-wrap">
+                        <canvas id="clubMemberChart"></canvas>
                     </div>
                 <?php else: ?>
                     <p class="muted-text">No club membership data available yet.</p>
@@ -137,31 +148,26 @@ $activePage = 'dashboard';
 
             <div class="card">
                 <h3>Club Operational Status</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Status</th>
-                            <th>Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    <?php if ($clubStatusSummary && mysqli_num_rows($clubStatusSummary) > 0): ?>
-                        <?php while ($row = mysqli_fetch_assoc($clubStatusSummary)): ?>
-                            <tr>
-                                <td>
-                                    <span class="badge <?= strtolower($row['ClubStatus']) === 'active' ? 'badge-active' : 'badge-inactive' ?>">
-                                        <?= ucfirst($row['ClubStatus']) ?>
-                                    </span>
-                                </td>
-                                <td><?= (int)$row['total'] ?></td>
-                            </tr>
-                        <?php endwhile; ?>
-                    <?php else: ?>
-                        <tr><td colspan="2" style="text-align:center; color:#999;">No club status data.</td></tr>
-                    <?php endif; ?>
-                    </tbody>
-                </table>
+                <?php if (!empty($statusChartLabels)): ?>
+                    <div class="chart-doughnut-wrap">
+                        <canvas id="clubStatusChart"></canvas>
+                    </div>
+                <?php else: ?>
+                    <p class="muted-text">No club status data.</p>
+                <?php endif; ?>
             </div>
+        </div>
+
+        <!-- ── Events by status chart ── -->
+        <div class="card">
+            <h3>Events by Status</h3>
+            <?php if (!empty($evChartLabels)): ?>
+                <div class="chart-event-wrap">
+                    <canvas id="eventStatusChart"></canvas>
+                </div>
+            <?php else: ?>
+                <p class="muted-text">No event data available yet.</p>
+            <?php endif; ?>
         </div>
 
         <!-- ── Recently registered students ── -->
@@ -221,5 +227,70 @@ $activePage = 'dashboard';
         </div>
     </main>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+<?php if (!empty($clubChartLabels)): ?>
+new Chart(document.getElementById('clubMemberChart'), {
+    type: 'bar',
+    data: {
+        labels: <?= json_encode($clubChartLabels) ?>,
+        datasets: [{
+            label: 'Members',
+            data: <?= json_encode($clubChartCounts) ?>,
+            backgroundColor: '#1a3c6e',
+            borderRadius: 4,
+        }]
+    },
+    options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: { legend: { display: false } },
+        scales: { x: { beginAtZero: true, ticks: { stepSize: 1 } } }
+    }
+});
+<?php endif; ?>
+
+<?php if (!empty($statusChartLabels)): ?>
+new Chart(document.getElementById('clubStatusChart'), {
+    type: 'doughnut',
+    data: {
+        labels: <?= json_encode($statusChartLabels) ?>,
+        datasets: [{
+            data: <?= json_encode($statusChartCounts) ?>,
+            backgroundColor: <?= json_encode($statusChartColors) ?>,
+            borderWidth: 2,
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { position: 'bottom' } }
+    }
+});
+<?php endif; ?>
+
+<?php if (!empty($evChartLabels)): ?>
+new Chart(document.getElementById('eventStatusChart'), {
+    type: 'bar',
+    data: {
+        labels: <?= json_encode($evChartLabels) ?>,
+        datasets: [{
+            label: 'Events',
+            data: <?= json_encode($evChartCounts) ?>,
+            backgroundColor: <?= json_encode($evChartColors) ?>,
+            borderRadius: 6,
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+    }
+});
+<?php endif; ?>
+</script>
+
 </body>
 </html>

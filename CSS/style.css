@@ -632,6 +632,23 @@ tbody td {
     margin-bottom: 6px;
 }
 
+/* CHART CONTAINERS */
+
+.chart-bar-wrap {
+    position: relative;
+    min-height: 220px;
+}
+
+.chart-doughnut-wrap {
+    max-width: 260px;
+    margin: 16px auto 0;
+}
+
+.chart-event-wrap {
+    position: relative;
+    height: 240px;
+}
+
 @media (max-width: 900px) {
     .dashboard-grid {
         grid-template-columns: 1fr;
