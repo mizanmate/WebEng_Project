@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'assig
         mysqli_stmt_store_result($chkMember);
 
         if (mysqli_stmt_num_rows($chkMember) === 0) {
-            $memberID = next_id($link, 'ClubMembership', 'memberID', 'MBR', 4);
+            $memberID = next_id($link, 'clubmembership', 'memberID', 'MBR', 4);
             $today = date('Y-m-d');
             $insMember = mysqli_prepare($link,
                 'INSERT INTO clubmembership (memberID, userID, clubID, RegistrationDate, clubRole)
@@ -82,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'assig
                 $error = 'Unable to update committee role.';
             }
         } else {
-            $committeeID = next_id($link, 'ClubCommitee', 'committeeID', 'CMT', 4);
+            $committeeID = next_id($link, 'clubcommitee', 'committeeID', 'CMT', 4);
             $ins = mysqli_prepare($link,
                 'INSERT INTO clubcommitee (committeeID, userID, clubID, commiteePosition, CommiteeAssignDate)
                  VALUES (?, ?, ?, ?, ?)'

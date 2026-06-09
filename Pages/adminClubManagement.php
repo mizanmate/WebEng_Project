@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && in_array($_POST['action'] ?? '', ['
         $error = 'Invalid club status.';
     } else {
         if ($action === 'create') {
-            $newID = next_prefixed_id($link, 'Club', 'ClubID', 'CLB', 3);
+            $newID = next_prefixed_id($link, 'club', 'ClubID', 'CLB', 3);
             $today = date('Y-m-d');
 
             $ins = mysqli_prepare($link,
