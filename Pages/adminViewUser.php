@@ -17,11 +17,12 @@ $notFound = false;
 if ($search !== '') {
     $q = mysqli_prepare($link,
         "SELECT l.name, s.StudentID, s.Programme, s.StudYear, s.Email, s.Phone, s.totalPoints,
+                s.status,
                 GROUP_CONCAT(c.ClubName ORDER BY c.ClubName SEPARATOR ', ') AS clubs
          FROM student       s
          JOIN login         l  ON l.UserID  = s.UserID
-         LEFT   JOIN clubmembership cm ON cm.userID = s.UserID
-         LEFT   JOIN club          c  ON c.ClubID  = cm.clubID
+         LEFT JOIN clubmembership cm ON cm.userID = s.UserID
+         LEFT JOIN club          c  ON c.ClubID  = cm.clubID
          WHERE  s.StudentID = ?
          GROUP  BY s.StudentID"
     );
@@ -36,13 +37,26 @@ if ($search !== '') {
     }
 }
 
+// ── Full student list ──────────────────────────────────────────────────────
+$listQuery = "SELECT l.name, s.StudentID, s.Programme, s.StudYear, s.Email,
+                     s.status, s.totalPoints,
+                     COUNT(DISTINCT cm.clubID) AS clubCount
+              FROM student s
+              JOIN login l ON l.UserID = s.UserID
+              LEFT JOIN clubmembership cm ON cm.userID = s.UserID
+              GROUP BY s.StudentID, l.name, s.Programme, s.StudYear, s.Email, s.status, s.totalPoints
+              ORDER BY l.name ASC";
+$allStudents = mysqli_query($link, $listQuery);
+
 // ── Page meta ─────────────────────────────────────────────────────────────
 $pageTitle  = 'View User — Admin';
 $activePage = 'view_users';
 ?>
 <!DOCTYPE html>
 <html lang="en">
-<head><?php include 'includes/head.php'; ?></head>
+<head>
+    <?php include 'includes/head.php'; ?>
+</head>
 <body>
 
 <div class="app">
@@ -70,11 +84,10 @@ $activePage = 'view_users';
             </div>
         <?php endif; ?>
 
-        <!-- ── Result ── -->
+        <!-- ── Single search result detail card ── -->
         <?php if ($found): ?>
             <div class="card">
                 <h3>Student Details</h3>
-
                 <table>
                     <tbody>
                         <tr>
@@ -106,20 +119,76 @@ $activePage = 'view_users';
                             <td><?= (int)$found['totalPoints'] ?></td>
                         </tr>
                         <tr>
+                            <td style="font-weight:600; color:#555;">Status</td>
+                            <td>
+                                <span class="badge <?= strtolower($found['status'] ?? 'active') === 'active' ? 'badge-active' : 'badge-inactive' ?>">
+                                    <?= ucfirst($found['status'] ?? 'active') ?>
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
                             <td style="font-weight:600; color:#555;">Registered Clubs</td>
                             <td><?= htmlspecialchars($found['clubs'] ?? 'None') ?></td>
                         </tr>
                     </tbody>
                 </table>
-
                 <div class="btn-group">
                     <a href="adminEditUser.php?search_id=<?= urlencode($found['StudentID']) ?>"
-                       class="btn btn-primary btn-sm">
-                        Edit This User
-                    </a>
+                       class="btn btn-primary btn-sm">Edit This User</a>
+                    <a href="adminViewUser.php" class="btn btn-secondary btn-sm">Clear Search</a>
                 </div>
             </div>
         <?php endif; ?>
+
+        <!-- ── All students table ── -->
+        <div class="card">
+            <h3><?= $search !== '' ? 'All Students' : 'All Registered Students' ?></h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Student ID</th>
+                        <th>Programme</th>
+                        <th>Year</th>
+                        <th>Email</th>
+                        <th>Clubs</th>
+                        <th>Points</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <?php if ($allStudents && mysqli_num_rows($allStudents) > 0): ?>
+                    <?php while ($row = mysqli_fetch_assoc($allStudents)): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($row['name']) ?></td>
+                            <td><?= htmlspecialchars($row['StudentID']) ?></td>
+                            <td><?= htmlspecialchars($row['Programme'] ?: '—') ?></td>
+                            <td><?= htmlspecialchars($row['StudYear'] ?: '—') ?></td>
+                            <td><?= htmlspecialchars($row['Email'] ?: '—') ?></td>
+                            <td><?= (int)$row['clubCount'] ?></td>
+                            <td><?= (int)$row['totalPoints'] ?></td>
+                            <td>
+                                <span class="badge <?= strtolower($row['status'] ?? 'active') === 'active' ? 'badge-active' : 'badge-inactive' ?>">
+                                    <?= ucfirst($row['status'] ?? 'active') ?>
+                                </span>
+                            </td>
+                            <td>
+                                <a href="adminViewUser.php?search_id=<?= urlencode($row['StudentID']) ?>"
+                                   class="btn btn-secondary btn-sm">View</a>
+                                <a href="adminEditUser.php?search_id=<?= urlencode($row['StudentID']) ?>"
+                                   class="btn btn-primary btn-sm">Edit</a>
+                            </td>
+                        </tr>
+                    <?php endwhile; ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="9" style="text-align:center; color:#999;">No students registered yet.</td>
+                    </tr>
+                <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
 
     </main>
 </div>
