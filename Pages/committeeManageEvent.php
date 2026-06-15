@@ -14,6 +14,11 @@ require_once 'DB_connection.php';
 
 $userID = $_SESSION['UserID'];
 
+$stmt = mysqli_prepare($link, 'SELECT Studphoto FROM student WHERE UserID = ?');
+mysqli_stmt_bind_param($stmt, 's', $userID);
+mysqli_stmt_execute($stmt);
+$sidebarUser = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+
 /* Committee Club */
 
 $stmt = mysqli_prepare(

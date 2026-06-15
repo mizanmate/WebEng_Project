@@ -48,7 +48,6 @@ $active = $activePage ?? '';
         <a href="adminDash.php"         class="<?= $active === 'dashboard'     ? 'active' : '' ?>">Dashboard</a>
         <a href="adminRegisterUser.php" class="<?= $active === 'register_user' ? 'active' : '' ?>">Register User</a>
         <a href="adminViewUser.php"     class="<?= $active === 'view_users'    ? 'active' : '' ?>">View Users</a>
-        <a href="adminEditUser.php"     class="<?= $active === 'edit_user'     ? 'active' : '' ?>">Edit User</a>
 
         <span class="sidebar-section-label">Module 2</span>
         <a href="adminClubManagement.php" class="<?= $active === 'club_management' ? 'active' : '' ?>">Manage Clubs</a>
