@@ -75,8 +75,20 @@ if (isset($link, $_SESSION['UserID'])) {
 
         <?php if ($isCommitteeUser): ?>
             <a href="committeeCreateEvent.php" class="<?= $active === 'create_event' ? 'active' : '' ?>">Create Event</a>
+<<<<<<< HEAD
             <a href="committeeManageEvent.php"class="<?= $active === 'manage_event' ? 'active' : '' ?>">Manage Events</a>
         <?php endif; ?>
+=======
+            <a href="committeeManageEvent.php" class="<?= $active === 'manage_event' ? 'active' : '' ?>">Manage Events</a>
+        <?php endif; ?>
+
+        <span class="sidebar-section-label">Module 4</span>
+        <?php if ($isCommitteeUser): ?>
+            <a href="committeeAttendanceDashboard.php" class="<?= $active === 'committee_attendance' ? 'active' : '' ?>">Attendance Dashboard</a>
+            <a href="committeeTakeAttendance.php" class="<?= in_array($active, ['take_attendance', 'committee_attendance'], true) ? 'active' : '' ?>">Take Attendance</a>
+        <?php endif; ?>
+        <a href="StudAttendancePoints.php" class="<?= $active === 'attendance_points' ? 'active' : '' ?>">My Attendance &amp; Points</a>
+>>>>>>> 846b63a (Add Module 4 attendance and QR check-in)
     </nav>
 
     <!-- ── Logout ── -->

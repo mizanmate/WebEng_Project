@@ -53,6 +53,16 @@ $active = $activePage ?? '';
         <a href="adminClubManagement.php" class="<?= $active === 'club_management' ? 'active' : '' ?>">Manage Clubs</a>
         <a href="adminCommitteeManagement.php" class="<?= $active === 'committee_management' ? 'active' : '' ?>">Manage Committees</a>
 
+<<<<<<< HEAD
+=======
+        <span class="sidebar-section-label">Module 3</span>
+        <a href="adminEventList.php" class="<?= in_array($active, ['events', 'event_management'], true) ? 'active' : '' ?>">Event Management</a>
+        <a href="adminEventAnalytics.php" class="<?= $active === 'analytics' ? 'active' : '' ?>">Event Analytics</a>
+
+        <span class="sidebar-section-label">Module 4</span>
+        <a href="adminParticipationReport.php" class="<?= $active === 'attendance_report' ? 'active' : '' ?>">Participation Report</a>
+
+>>>>>>> 846b63a (Add Module 4 attendance and QR check-in)
         <!-- Teammates: add your admin links below this line -->
     </nav>
 
