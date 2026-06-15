@@ -43,7 +43,7 @@ $active = $activePage ?? '';
         <p class="user-role">Administrator</p>
     </div>
 
-    <!-- ── Module 1 navigation ── -->
+    <!-- ── Module navigation ── -->
     <nav class="sidebar-nav">
         <a href="adminDash.php"         class="<?= $active === 'dashboard'     ? 'active' : '' ?>">Dashboard</a>
         <a href="adminRegisterUser.php" class="<?= $active === 'register_user' ? 'active' : '' ?>">Register User</a>
@@ -60,7 +60,6 @@ $active = $activePage ?? '';
         <span class="sidebar-section-label">Module 4</span>
         <a href="adminParticipationReport.php" class="<?= $active === 'attendance_report' ? 'active' : '' ?>">Participation Report</a>
 
-        <!-- Teammates: add your admin links below this line -->
     </nav>
 
     <!-- ── Logout ── -->
