@@ -1,0 +1,5 @@
+StudAttendancePoints.php: No syntax errors detected in /mnt/data/Module4_InterfaceOnly/Pages/StudAttendancePoints.php
+adminParticipationReport.php: No syntax errors detected in /mnt/data/Module4_InterfaceOnly/Pages/adminParticipationReport.php
+adminStudentAttendanceDetail.php: No syntax errors detected in /mnt/data/Module4_InterfaceOnly/Pages/adminStudentAttendanceDetail.php
+committeeAttendanceDashboard.php: No syntax errors detected in /mnt/data/Module4_InterfaceOnly/Pages/committeeAttendanceDashboard.php
+committeeTakeAttendance.php: No syntax errors detected in /mnt/data/Module4_InterfaceOnly/Pages/committeeTakeAttendance.php
