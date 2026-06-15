@@ -210,6 +210,48 @@ $success = '';
 $error = '';
 $notice = '';
 
+// Delete one attendance record created by committee.
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delete_attendance') {
+    $attendanceID = trim($_POST['delete_attendance_id'] ?? '');
+
+    if ($selectedEvent === '' || $attendanceID === '') {
+        $error = 'Invalid attendance record selected for deletion.';
+    } else {
+        $findDelete = mysqli_prepare($link,
+            "SELECT a.attendanceID, a.studentID
+             FROM attendance a
+             JOIN event e ON e.eventID = a.eventID
+             WHERE a.attendanceID = ?
+             AND a.eventID = ?
+             AND e.ClubID = ?
+             LIMIT 1"
+        );
+        mysqli_stmt_bind_param($findDelete, 'sss', $attendanceID, $selectedEvent, $clubID);
+        mysqli_stmt_execute($findDelete);
+        $attendanceToDelete = mysqli_fetch_assoc(mysqli_stmt_get_result($findDelete));
+
+        if (!$attendanceToDelete) {
+            $error = 'Attendance record was not found or you are not allowed to delete it.';
+        } else {
+            $studentToRecalculate = $attendanceToDelete['studentID'];
+
+            $delPoint = mysqli_prepare($link, 'DELETE FROM pointlog WHERE attendanceID = ?');
+            mysqli_stmt_bind_param($delPoint, 's', $attendanceID);
+            mysqli_stmt_execute($delPoint);
+
+            $delAttendance = mysqli_prepare($link, 'DELETE FROM attendance WHERE attendanceID = ?');
+            mysqli_stmt_bind_param($delAttendance, 's', $attendanceID);
+
+            if (mysqli_stmt_execute($delAttendance)) {
+                recalc_student_points($link, $studentToRecalculate);
+                $success = 'Attendance record has been deleted successfully.';
+            } else {
+                $error = 'Failed to delete attendance record.';
+            }
+        }
+    }
+}
+
 // Create one attendance record by ID / username / QR result.
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'create_attendance') {
     $identifier = trim($_POST['student_identifier'] ?? '');
@@ -372,6 +414,8 @@ $activePage = 'take_attendance';
 .point-guide{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px;}
 .point-item{background:#f8fafc;border:1px solid #e5e7eb;border-radius:8px;padding:10px;text-align:center;font-size:13px;}
 .point-item strong{display:block;color:#1f3f77;font-size:17px;}
+.btn-danger{background:#dc2626;color:#fff;}
+.btn-danger:hover{background:#b91c1c;color:#fff;}
 @media(max-width:1150px){.create-grid{grid-template-columns:1fr 1fr}.attendance-grid{grid-template-columns:1fr}.stats-mini{grid-template-columns:repeat(2,1fr)}.point-guide{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:700px){.form-inline,.create-grid{grid-template-columns:1fr}.page-header{display:block}.stats-mini,.point-guide{grid-template-columns:1fr}}
 </style>
@@ -520,7 +564,7 @@ window.addEventListener('DOMContentLoaded', updateAttendanceFields);
         <div class="table-card">
             <h3>Registered Participants</h3>
             <form method="post">
-                <input type="hidden" name="action" value="save_attendance">
+                <input type="hidden" id="attendance_form_action" name="action" value="save_attendance">
                 <input type="hidden" name="eventID" value="<?= htmlspecialchars($selectedEvent) ?>">
                 <table>
                     <thead>
@@ -531,6 +575,7 @@ window.addEventListener('DOMContentLoaded', updateAttendanceFields);
                             <th>Check-In Time</th>
                             <th>Attendance Status</th>
                             <th>Points</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -569,15 +614,28 @@ window.addEventListener('DOMContentLoaded', updateAttendanceFields);
                                     <?php endif; ?>
                                 </td>
                                 <td><?= (int)$row['pointsEarn'] ?></td>
+                                <td>
+                                    <?php if (!empty($row['attendanceID'])): ?>
+                                        <button type="submit"
+                                                name="delete_attendance_id"
+                                                value="<?= htmlspecialchars($row['attendanceID']) ?>"
+                                                class="btn btn-danger btn-sm"
+                                                onclick="document.getElementById('attendance_form_action').value='delete_attendance'; return confirm('Delete this attendance record? The participant registration will remain, but attendance and points will be removed.');">
+                                            Delete
+                                        </button>
+                                    <?php else: ?>
+                                        <span class="small-muted">Not created</span>
+                                    <?php endif; ?>
+                                </td>
                             </tr>
                         <?php endwhile; ?>
                     <?php else: ?>
-                        <tr><td colspan="6" style="text-align:center;color:#888;">No registered participant for this event. You can still create attendance using the form above.</td></tr>
+                        <tr><td colspan="7" style="text-align:center;color:#888;">No registered participant for this event. You can still create attendance using the form above.</td></tr>
                     <?php endif; ?>
                     </tbody>
                 </table>
                 <div class="btn-group" style="margin-top:20px;">
-                    <button type="submit" class="btn btn-primary">Save Registered Participant Attendance</button>
+                    <button type="submit" onclick="document.getElementById('attendance_form_action').value='save_attendance';" class="btn btn-primary">Save Registered Participant Attendance</button>
                     <a href="committeeAttendanceDashboard.php" class="btn btn-secondary">Dashboard</a>
                 </div>
             </form>
