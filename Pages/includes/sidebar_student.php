@@ -60,35 +60,33 @@ if (isset($link, $_SESSION['UserID'])) {
         <p class="user-role"><?= $isCommitteeUser ? 'Student / Committee' : 'Student' ?></p>
     </div>
 
-    <!-- ── Module 1 navigation ── -->
+    <!-- ── Navigation ── -->
     <nav class="sidebar-nav">
-        <a href="studDash.php"       class="<?= $active === 'dashboard'   ? 'active' : '' ?>">Dashboard</a>
+        <a href="studDash.php"    class="<?= $active === 'dashboard' ? 'active' : '' ?>">Dashboard</a>
+        <a href="viewProfile.php" class="<?= $active === 'profile'   ? 'active' : '' ?>">View Profile</a>
+
+        <span class="sidebar-section-label">Module 2</span>
         <a href="StudClubDirectory.php" class="<?= $active === 'club_directory' ? 'active' : '' ?>">Club Directory</a>
-        <a href="StudManageClub.php" class="<?= $active === 'manage_club' ? 'active' : '' ?>">Manage Club</a>
-        <a href="StudJoinClub.php"   class="<?= $active === 'join_club'   ? 'active' : '' ?>">Join club</a>
+        <a href="StudManageClub.php"    class="<?= $active === 'manage_club'    ? 'active' : '' ?>">Manage Club</a>
+        <a href="StudJoinClub.php"      class="<?= $active === 'join_club'      ? 'active' : '' ?>">Join Club</a>
         <?php if ($isCommitteeUser): ?>
             <a href="committeeDash.php" class="<?= $active === 'committee_dashboard' ? 'active' : '' ?>">Committee Dashboard</a>
         <?php endif; ?>
-        <a href="viewProfile.php"    class="<?= $active === 'profile'     ? 'active' : '' ?>">View Profile</a>
-        <a href="StudBrowseEvent.php" class="<?= $active === 'browse_event' ? 'active' : '' ?>">Browse Events</a>
-        <a href="StudMyEvents.php" class="<?= $active === 'my_events' ? 'active' : '' ?>">My Events</a>
 
+        <span class="sidebar-section-label">Module 3</span>
+        <a href="StudBrowseEvent.php" class="<?= $active === 'browse_event' ? 'active' : '' ?>">Browse Events</a>
+        <a href="StudMyEvents.php"    class="<?= $active === 'my_events'    ? 'active' : '' ?>">My Events</a>
         <?php if ($isCommitteeUser): ?>
-            <a href="committeeCreateEvent.php" class="<?= $active === 'create_event' ? 'active' : '' ?>">Create Event</a>
-<<<<<<< HEAD
-            <a href="committeeManageEvent.php"class="<?= $active === 'manage_event' ? 'active' : '' ?>">Manage Events</a>
-        <?php endif; ?>
-=======
-            <a href="committeeManageEvent.php" class="<?= $active === 'manage_event' ? 'active' : '' ?>">Manage Events</a>
+            <a href="committeeCreateEvent.php"  class="<?= $active === 'create_event' ? 'active' : '' ?>">Create Event</a>
+            <a href="committeeManageEvent.php"  class="<?= $active === 'manage_event' ? 'active' : '' ?>">Manage Events</a>
         <?php endif; ?>
 
         <span class="sidebar-section-label">Module 4</span>
         <?php if ($isCommitteeUser): ?>
             <a href="committeeAttendanceDashboard.php" class="<?= $active === 'committee_attendance' ? 'active' : '' ?>">Attendance Dashboard</a>
-            <a href="committeeTakeAttendance.php" class="<?= in_array($active, ['take_attendance', 'committee_attendance'], true) ? 'active' : '' ?>">Take Attendance</a>
+            <a href="committeeTakeAttendance.php"      class="<?= in_array($active, ['take_attendance', 'committee_attendance'], true) ? 'active' : '' ?>">Take Attendance</a>
         <?php endif; ?>
         <a href="StudAttendancePoints.php" class="<?= $active === 'attendance_points' ? 'active' : '' ?>">My Attendance &amp; Points</a>
->>>>>>> 846b63a (Add Module 4 attendance and QR check-in)
     </nav>
 
     <!-- ── Logout ── -->
