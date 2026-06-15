@@ -91,7 +91,7 @@ if (isset($link, $_SESSION['UserID'])) {
 
     <!-- ── Logout ── -->
     <div class="sidebar-footer">
-        <a href="login.php" class="sidebar-logout">Log Out</a>
+        <a href="login.php?logout=1" class="sidebar-logout">Log Out</a>
     </div>
 
 </aside>
