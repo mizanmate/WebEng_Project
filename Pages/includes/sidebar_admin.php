@@ -22,6 +22,10 @@ $active = $activePage ?? '';
         <p class="user-role">Administrator</p>
     </div>
 
+<<<<<<< HEAD
+=======
+    <!-- ── Module navigation ── -->
+>>>>>>> origin/master
     <nav class="sidebar-nav">
         <a href="adminDash.php" class="<?php echo ($active === 'dashboard') ? 'active' : ''; ?>">Dashboard</a>
         <a href="adminRegisterUser.php" class="<?php echo ($active === 'register_user') ? 'active' : ''; ?>">Register User</a>
@@ -35,11 +39,17 @@ $active = $activePage ?? '';
         <a href="adminEventList.php" class="<?php echo ($active === 'events' || $active === 'event_management') ? 'active' : ''; ?>">Event Management</a>
         <a href="adminEventAnalytics.php" class="<?php echo ($active === 'analytics') ? 'active' : ''; ?>">Event Analytics</a>
 
+<<<<<<< HEAD
         <a href="adminParticipationReport.php" class="<?php echo ($active === 'attendance_report' || $active === 'participation_report') ? 'active' : ''; ?>">Participation Report</a>
+=======
+        <span class="sidebar-section-label">Module 4</span>
+        <a href="adminParticipationReport.php" class="<?= $active === 'attendance_report' ? 'active' : '' ?>">Participation Report</a>
+
+>>>>>>> origin/master
     </nav>
 
     <div class="sidebar-footer">
-        <a href="login.php" class="sidebar-logout">Log Out</a>
+        <a href="login.php?logout=1" class="sidebar-logout">Log Out</a>
     </div>
 
 </aside>
