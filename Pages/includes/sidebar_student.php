@@ -1,11 +1,8 @@
 <?php
 // ================================================================
 //  includes/sidebar_student.php
-//  Student sidebar — included on every student-facing page.
-//
-//  Required before include:
-//      $activePage  (string) current page key
-//      $sidebarUser (array)  must contain Studphoto key
+//  Student sidebar with committee-only links and Module 4 links.
+//  Fixed: removed unmatched endif / PHP syntax issue.
 // ================================================================
 
 $active = $activePage ?? '';
@@ -13,8 +10,9 @@ $hasPic = !empty($sidebarUser['Studphoto']);
 $picSrc = $hasPic ? '../uploads/' . htmlspecialchars($sidebarUser['Studphoto']) : '';
 
 // Committee is not a separate login role. It is an extra privilege for students
-// who have a record in ClubCommitee.
+// who have a record in ClubCommitee. This keeps normal student access intact.
 $isCommitteeUser = false;
+
 if (isset($link, $_SESSION['UserID'])) {
     $committeeStmt = mysqli_prepare($link, 'SELECT committeeID FROM clubcommitee WHERE userID = ? LIMIT 1');
     if ($committeeStmt) {
@@ -44,63 +42,72 @@ if (isset($link, $_SESSION['UserID'])) {
         <p class="user-role"><?php echo $isCommitteeUser ? 'Student / Committee' : 'Student'; ?></p>
     </div>
 
-<<<<<<< HEAD
     <nav class="sidebar-nav">
-        <a href="studDash.php" class="<?php echo ($active === 'dashboard') ? 'active' : ''; ?>">Dashboard</a>
-        <a href="StudClubDirectory.php" class="<?php echo ($active === 'club_directory') ? 'active' : ''; ?>">Club Directory</a>
-        <a href="StudManageClub.php" class="<?php echo ($active === 'manage_club') ? 'active' : ''; ?>">Manage Club</a>
-        <a href="StudJoinClub.php" class="<?php echo ($active === 'join_club') ? 'active' : ''; ?>">Join club</a>
-=======
-    <!-- ── Navigation ── -->
-    <nav class="sidebar-nav">
-        <a href="studDash.php"    class="<?= $active === 'dashboard' ? 'active' : '' ?>">Dashboard</a>
-        <a href="viewProfile.php" class="<?= $active === 'profile'   ? 'active' : '' ?>">View Profile</a>
+
+        <a href="studDash.php" class="<?php echo $active === 'dashboard' ? 'active' : ''; ?>">
+            Dashboard
+        </a>
+
+        <a href="viewProfile.php" class="<?php echo $active === 'profile' ? 'active' : ''; ?>">
+            View Profile
+        </a>
 
         <span class="sidebar-section-label">Module 2</span>
-        <a href="StudClubDirectory.php" class="<?= $active === 'club_directory' ? 'active' : '' ?>">Club Directory</a>
-        <a href="StudManageClub.php"    class="<?= $active === 'manage_club'    ? 'active' : '' ?>">Manage Club</a>
-        <a href="StudJoinClub.php"      class="<?= $active === 'join_club'      ? 'active' : '' ?>">Join Club</a>
+
+        <a href="StudClubDirectory.php" class="<?php echo $active === 'club_directory' ? 'active' : ''; ?>">
+            Club Directory
+        </a>
+
+        <a href="StudManageClub.php" class="<?php echo $active === 'manage_club' ? 'active' : ''; ?>">
+            Manage Club
+        </a>
+
+        <a href="StudJoinClub.php" class="<?php echo $active === 'join_club' ? 'active' : ''; ?>">
+            Join Club
+        </a>
+
         <?php if ($isCommitteeUser): ?>
-            <a href="committeeDash.php" class="<?= $active === 'committee_dashboard' ? 'active' : '' ?>">Committee Dashboard</a>
+            <a href="committeeDash.php" class="<?php echo $active === 'committee_dashboard' ? 'active' : ''; ?>">
+                Committee Dashboard
+            </a>
         <?php endif; ?>
->>>>>>> origin/master
 
         <span class="sidebar-section-label">Module 3</span>
-        <a href="StudBrowseEvent.php" class="<?= $active === 'browse_event' ? 'active' : '' ?>">Browse Events</a>
-        <a href="StudMyEvents.php"    class="<?= $active === 'my_events'    ? 'active' : '' ?>">My Events</a>
-        <?php if ($isCommitteeUser): ?>
-<<<<<<< HEAD
-            <a href="committeeDash.php" class="<?php echo ($active === 'committee_dashboard') ? 'active' : ''; ?>">Committee Dashboard</a>
-=======
-            <a href="committeeCreateEvent.php"  class="<?= $active === 'create_event' ? 'active' : '' ?>">Create Event</a>
-            <a href="committeeManageEvent.php"  class="<?= $active === 'manage_event' ? 'active' : '' ?>">Manage Events</a>
->>>>>>> origin/master
-        <?php endif; ?>
 
-        <a href="viewProfile.php" class="<?php echo ($active === 'profile') ? 'active' : ''; ?>">View Profile</a>
-        <a href="StudBrowseEvent.php" class="<?php echo ($active === 'browse_event' || $active === 'events') ? 'active' : ''; ?>">Browse Events</a>
-        <a href="StudMyEvents.php" class="<?php echo ($active === 'my_events' || $active === 'myevents') ? 'active' : ''; ?>">My Events</a>
+        <a href="StudBrowseEvent.php" class="<?php echo $active === 'browse_event' || $active === 'events' ? 'active' : ''; ?>">
+            Browse Events
+        </a>
+
+        <a href="StudMyEvents.php" class="<?php echo $active === 'my_events' || $active === 'myevents' ? 'active' : ''; ?>">
+            My Events
+        </a>
 
         <?php if ($isCommitteeUser): ?>
-<<<<<<< HEAD
-            <span class="sidebar-section-label">Committee</span>
-            <a href="committeeCreateEvent.php" class="<?php echo ($active === 'create_event' || $active === 'committee_create') ? 'active' : ''; ?>">Create Event</a>
-            <a href="committeeManageEvent.php" class="<?php echo ($active === 'manage_event' || $active === 'committee') ? 'active' : ''; ?>">Manage Events</a>
-            <a href="committeeAttendanceDashboard.php" class="<?php echo ($active === 'committee_attendance') ? 'active' : ''; ?>">Attendance Dashboard</a>
-            <a href="committeeTakeAttendance.php" class="<?php echo ($active === 'take_attendance') ? 'active' : ''; ?>">Take Attendance</a>
+            <a href="committeeCreateEvent.php" class="<?php echo $active === 'create_event' || $active === 'committee_create' ? 'active' : ''; ?>">
+                Create Event
+            </a>
+
+            <a href="committeeManageEvent.php" class="<?php echo $active === 'manage_event' || $active === 'committee' ? 'active' : ''; ?>">
+                Manage Events
+            </a>
+
+            <a href="committeeAttendanceDashboard.php" class="<?php echo $active === 'attendance_dashboard' ? 'active' : ''; ?>">
+                Attendance Dashboard
+            </a>
+
+            <a href="committeeTakeAttendance.php" class="<?php echo $active === 'take_attendance' ? 'active' : ''; ?>">
+                Take Attendance
+            </a>
         <?php endif; ?>
 
-        <a href="StudAttendancePoints.php" class="<?php echo ($active === 'attendance_points') ? 'active' : ''; ?>">My Attendance &amp; Points</a>
-=======
-            <a href="committeeAttendanceDashboard.php" class="<?= $active === 'committee_attendance' ? 'active' : '' ?>">Attendance Dashboard</a>
-            <a href="committeeTakeAttendance.php"      class="<?= in_array($active, ['take_attendance', 'committee_attendance'], true) ? 'active' : '' ?>">Take Attendance</a>
-        <?php endif; ?>
-        <a href="StudAttendancePoints.php" class="<?= $active === 'attendance_points' ? 'active' : '' ?>">My Attendance &amp; Points</a>
->>>>>>> origin/master
+        <a href="StudAttendancePoints.php" class="<?php echo $active === 'attendance_points' ? 'active' : ''; ?>">
+            My Attendance &amp; Points
+        </a>
+
     </nav>
 
     <div class="sidebar-footer">
-        <a href="login.php?logout=1" class="sidebar-logout">Log Out</a>
+        <a href="login.php" class="sidebar-logout">Log Out</a>
     </div>
 
 </aside>
