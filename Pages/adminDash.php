@@ -133,7 +133,7 @@ $activePage = 'dashboard';
             </div>
         </div>
 
-        <!-- ── Module 2 dashboard charts ── -->
+        <!-- ── dashboard charts ── -->
         <div class="dashboard-grid">
             <div class="card">
                 <h3>Distribution of Students Across Clubs</h3>
