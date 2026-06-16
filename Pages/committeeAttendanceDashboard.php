@@ -106,17 +106,17 @@ $totalPoints = scalar_by_club($link,
      WHERE e.ClubID = ?",
     $clubID
 );
-$attendanceRate = $totalRegistered > 0 ? round((($presentCount + $lateCount) / $totalRegistered) * 100, 1) : 0;
+$attendanceRate = $totalRegistered > 0 ? min(100, round((($presentCount + $lateCount) / $totalRegistered) * 100, 1)) : 0;
 
 // Event level overview
 $eventsStmt = mysqli_prepare($link,
     "SELECT e.eventID, e.eventTitle, e.eventDate, e.eventTime, e.eventVenue, e.eventStatus,
             COUNT(DISTINCT r.registrationID) AS registeredCount,
             COUNT(DISTINCT a.attendanceID) AS markedCount,
-            SUM(CASE WHEN a.AttendanceStatus LIKE 'Present%' THEN 1 ELSE 0 END) AS presentCount,
-            SUM(CASE WHEN a.AttendanceStatus LIKE 'Late%' THEN 1 ELSE 0 END) AS lateCount,
-            SUM(CASE WHEN a.AttendanceStatus LIKE 'Absent%' THEN 1 ELSE 0 END) AS absentCount,
-            SUM(CASE WHEN a.AttendanceStatus LIKE '%Volunteer%' THEN 1 ELSE 0 END) AS volunteerCount,
+            COUNT(DISTINCT CASE WHEN a.AttendanceStatus LIKE 'Present%' THEN a.attendanceID END) AS presentCount,
+            COUNT(DISTINCT CASE WHEN a.AttendanceStatus LIKE 'Late%' THEN a.attendanceID END) AS lateCount,
+            COUNT(DISTINCT CASE WHEN a.AttendanceStatus LIKE 'Absent%' THEN a.attendanceID END) AS absentCount,
+            COUNT(DISTINCT CASE WHEN a.AttendanceStatus LIKE '%Volunteer%' THEN a.attendanceID END) AS volunteerCount,
             COALESCE(SUM(pl.pointsEarn), 0) AS eventPoints
      FROM event e
      LEFT JOIN registration r ON r.eventID = e.eventID AND r.registrationStatus = 'Registered'
@@ -253,7 +253,7 @@ $activePage = 'committee_attendance';
                         $late = (int)$event['lateCount'];
                         $absent = (int)$event['absentCount'];
                         $volunteer = (int)$event['volunteerCount'];
-                        $rate = $registered > 0 ? round((($present + $late) / $registered) * 100, 1) : 0;
+                        $rate = $registered > 0 ? min(100, round((($present + $late) / $registered) * 100, 1)) : 0;
                         $statusClass = in_array(strtolower($event['eventStatus']), ['upcoming','ongoing','completed'], true) ? strtolower($event['eventStatus']) : 'other';
                         ?>
                         <tr>

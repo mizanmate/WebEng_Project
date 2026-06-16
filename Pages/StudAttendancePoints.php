@@ -22,7 +22,28 @@ mysqli_stmt_execute($stmt);
 $student = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
 $sidebarUser = $student;
 $studentID = $student['StudentID'] ?? '';
-$totalPoints = (int)($student['totalPoints'] ?? 0);
+
+// Use actual PointLog records linked to attendance so the student page stays accurate.
+$pointsStmt = mysqli_prepare($link,
+    'SELECT COALESCE(SUM(pl.pointsEarn), 0) AS totalPoints
+     FROM attendance a
+     LEFT JOIN pointlog pl ON pl.attendanceID = a.attendanceID
+     WHERE a.studentID = ?'
+);
+mysqli_stmt_bind_param($pointsStmt, 's', $studentID);
+mysqli_stmt_execute($pointsStmt);
+$pointsRow = mysqli_fetch_assoc(mysqli_stmt_get_result($pointsStmt));
+$totalPoints = (int)($pointsRow['totalPoints'] ?? 0);
+
+$attendanceCountStmt = mysqli_prepare($link,
+    'SELECT COUNT(DISTINCT attendanceID) AS totalAttendance
+     FROM attendance
+     WHERE studentID = ?'
+);
+mysqli_stmt_bind_param($attendanceCountStmt, 's', $studentID);
+mysqli_stmt_execute($attendanceCountStmt);
+$attendanceCountRow = mysqli_fetch_assoc(mysqli_stmt_get_result($attendanceCountStmt));
+$eventsAttended = (int)($attendanceCountRow['totalAttendance'] ?? 0);
 
 function recognition_label(int $points): string {
     if ($points >= 80) return 'Outstanding Participant';
@@ -51,21 +72,32 @@ function attendance_class(string $status): string {
     return 'other';
 }
 
-$rankStmt = mysqli_prepare($link,
-    'SELECT COUNT(*) + 1 AS ranking FROM student WHERE totalPoints > ?'
-);
-mysqli_stmt_bind_param($rankStmt, 'i', $totalPoints);
-mysqli_stmt_execute($rankStmt);
-$ranking = (int)mysqli_fetch_assoc(mysqli_stmt_get_result($rankStmt))['ranking'];
+$rankingDisplay = '-';
+if ($eventsAttended > 0) {
+    // Ranking only applies to students who already have at least one attendance record.
+    $rankStmt = mysqli_prepare($link,
+        'SELECT COUNT(DISTINCT s.StudentID) + 1 AS ranking
+         FROM student s
+         WHERE s.totalPoints > ?
+         AND EXISTS (
+             SELECT 1 FROM attendance a
+             WHERE a.studentID = s.StudentID
+         )'
+    );
+    mysqli_stmt_bind_param($rankStmt, 'i', $totalPoints);
+    mysqli_stmt_execute($rankStmt);
+    $rankingDisplay = '#' . (int)mysqli_fetch_assoc(mysqli_stmt_get_result($rankStmt))['ranking'];
+}
 
 $historyStmt = mysqli_prepare($link,
     "SELECT e.eventTitle, c.ClubName, e.eventDate, e.eventVenue,
-            a.checkInTime, a.AttendanceStatus, COALESCE(pl.pointsEarn,0) AS pointsEarn
+            a.checkInTime, a.AttendanceStatus, COALESCE(SUM(pl.pointsEarn),0) AS pointsEarn
      FROM attendance a
      JOIN event e ON e.eventID = a.eventID
      JOIN club c ON c.ClubID = e.ClubID
      LEFT JOIN pointlog pl ON pl.attendanceID = a.attendanceID
      WHERE a.studentID = ?
+     GROUP BY a.attendanceID, e.eventTitle, c.ClubName, e.eventDate, e.eventVenue, a.checkInTime, a.AttendanceStatus
      ORDER BY a.checkInTime DESC"
 );
 mysqli_stmt_bind_param($historyStmt, 's', $studentID);
@@ -98,8 +130,8 @@ $activePage = 'attendance_points';
 
     <div class="profile-summary">
         <div class="summary-card"><h3><?= (int)$totalPoints ?></h3><p>Total Points</p></div>
-        <div class="summary-card"><h3>#<?= $ranking ?></h3><p>Ranking</p></div>
-        <div class="summary-card"><h3><?= mysqli_num_rows($history) ?></h3><p>Events Attended</p></div>
+        <div class="summary-card"><h3><?= htmlspecialchars($rankingDisplay) ?></h3><p>Ranking</p></div>
+        <div class="summary-card"><h3><?= (int)$eventsAttended ?></h3><p>Events Attended</p></div>
         <div class="summary-card"><h3><?= htmlspecialchars($student['StudentID'] ?? '') ?></h3><p>Student ID</p></div>
     </div>
 
