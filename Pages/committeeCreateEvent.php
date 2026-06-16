@@ -2,7 +2,7 @@
 
 session_start();
 
-if (!isset($_SESSION['UserID'])) {
+if (!isset($_SESSION['UserID']) || $_SESSION['role'] !== 'student') {
     header('Location: login.php');
     exit();
 }
@@ -71,41 +71,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     } else {
 
-<<<<<<< HEAD
-        $count =
-        mysqli_fetch_row(
-            mysqli_query(
-                $link,
-                "SELECT COUNT(*) FROM event"
-            )
-        );
-
-        $eventID =
-            'EV' .
-            str_pad(
-                $count[0] + 1,
-                4,
-                '0',
-                STR_PAD_LEFT
-            );
-=======
-        // Module 4 QR uses the real eventID from the database.
-        // New events now follow the requested format: evt001, evt002, evt003, ...
-        // This prevents QR codes from using the old EV0001 format.
-        $nextEventNo = 1;
-        $eventIdQuery = mysqli_query(
-            $link,
-            "SELECT MAX(CAST(SUBSTRING(eventID, 4) AS UNSIGNED)) AS max_no
-             FROM event
-             WHERE LOWER(eventID) LIKE 'evt%'"
-        );
-        if ($eventIdQuery) {
-            $eventIdRow = mysqli_fetch_assoc($eventIdQuery);
-            $nextEventNo = ((int)($eventIdRow['max_no'] ?? 0)) + 1;
-        }
-
-        $eventID = 'evt' . str_pad((string)$nextEventNo, 3, '0', STR_PAD_LEFT);
->>>>>>> 846b63a (Add Module 4 attendance and QR check-in)
+        $maxRow = mysqli_fetch_row(mysqli_query($link,
+            "SELECT MAX(CAST(SUBSTRING(eventID, 3) AS UNSIGNED)) FROM event"
+        ));
+        $eventID = 'EV' . str_pad(((int)($maxRow[0] ?? 0)) + 1, 4, '0', STR_PAD_LEFT);
 
         $stmt = mysqli_prepare(
             $link,
@@ -156,7 +125,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $pageTitle = 'Create Event';
-$activePage = 'committee_create';
+$activePage = 'create_event';
 
 ?>
 
@@ -358,7 +327,7 @@ $activePage = 'committee_create';
                 <div class="btn-group">
 
                     <a
-                        href="committeeDashboard.php"
+                        href="committeeDash.php"
                         class="btn btn-secondary">
 
                         Back
