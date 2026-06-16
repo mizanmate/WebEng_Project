@@ -11,6 +11,7 @@ require_once 'DB_connection.php';
 
 $userID = $_SESSION['UserID'];
 
+/* Sidebar profile photo */
 $photoStmt = mysqli_prepare($link, 'SELECT Studphoto FROM student WHERE UserID = ?');
 mysqli_stmt_bind_param($photoStmt, 's', $userID);
 mysqli_stmt_execute($photoStmt);
@@ -23,29 +24,36 @@ $stmt = mysqli_prepare(
         cc.clubID,
         c.ClubName,
         cc.commiteePosition
-
      FROM clubcommitee cc
-
-     JOIN club c
-     ON c.ClubID = cc.clubID
-
+     JOIN club c ON c.ClubID = cc.clubID
      WHERE cc.userID = ?
-
      LIMIT 1"
 );
 
 mysqli_stmt_bind_param($stmt, 's', $userID);
 mysqli_stmt_execute($stmt);
 
-$committee =
-mysqli_fetch_assoc(
-    mysqli_stmt_get_result($stmt)
-);
+$committee = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
 
 if (!$committee) {
-
     die('Access Denied. Committee members only.');
+}
 
+/* Generate event ID as evt001, evt002, evt003... */
+function next_event_id(mysqli $link): string
+{
+    $sql = "
+        SELECT MAX(CAST(SUBSTRING(eventID, 4) AS UNSIGNED)) AS max_no
+        FROM event
+        WHERE LOWER(eventID) LIKE 'evt%'
+           OR UPPER(eventID) LIKE 'EV%'
+    ";
+
+    $result = mysqli_query($link, $sql);
+    $row = $result ? mysqli_fetch_assoc($result) : null;
+    $next = ((int)($row['max_no'] ?? 0)) + 1;
+
+    return 'evt' . str_pad((string)$next, 3, '0', STR_PAD_LEFT);
 }
 
 $success = '';
@@ -53,59 +61,25 @@ $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    $eventTitle = trim($_POST['eventTitle']);
-    $eventDesc = trim($_POST['eventDesc']);
-    $eventDate = $_POST['eventDate'];
-    $eventTime = $_POST['eventTime'];
-    $eventVenue = trim($_POST['eventVenue']);
-    $maxParticipants = (int)$_POST['maxParticipants'];
-    $eventStatus = $_POST['eventStatus'];
+    $eventTitle = trim($_POST['eventTitle'] ?? '');
+    $eventDesc = trim($_POST['eventDesc'] ?? '');
+    $eventDate = $_POST['eventDate'] ?? '';
+    $eventTime = $_POST['eventTime'] ?? '';
+    $eventVenue = trim($_POST['eventVenue'] ?? '');
+    $maxParticipants = (int)($_POST['maxParticipants'] ?? 0);
+    $eventStatus = $_POST['eventStatus'] ?? 'upcoming';
 
     if (
         $eventTitle === '' ||
         $eventDesc === '' ||
-        $eventVenue === ''
+        $eventDate === '' ||
+        $eventTime === '' ||
+        $eventVenue === '' ||
+        $maxParticipants <= 0
     ) {
-
         $error = 'Please fill in all required fields.';
-
     } else {
-
-<<<<<<< HEAD
-        $count =
-        mysqli_fetch_row(
-            mysqli_query(
-                $link,
-                "SELECT COUNT(*) FROM event"
-            )
-        );
-
-        $eventID =
-            'EV' .
-            str_pad(
-                $count[0] + 1,
-                4,
-                '0',
-                STR_PAD_LEFT
-            );
-=======
-        // Module 4 QR uses the real eventID from the database.
-        // New events now follow the requested format: evt001, evt002, evt003, ...
-        // This prevents QR codes from using the old EV0001 format.
-        $nextEventNo = 1;
-        $eventIdQuery = mysqli_query(
-            $link,
-            "SELECT MAX(CAST(SUBSTRING(eventID, 4) AS UNSIGNED)) AS max_no
-             FROM event
-             WHERE LOWER(eventID) LIKE 'evt%'"
-        );
-        if ($eventIdQuery) {
-            $eventIdRow = mysqli_fetch_assoc($eventIdQuery);
-            $nextEventNo = ((int)($eventIdRow['max_no'] ?? 0)) + 1;
-        }
-
-        $eventID = 'evt' . str_pad((string)$nextEventNo, 3, '0', STR_PAD_LEFT);
->>>>>>> 846b63a (Add Module 4 attendance and QR check-in)
+        $eventID = next_event_id($link);
 
         $stmt = mysqli_prepare(
             $link,
@@ -143,20 +117,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         );
 
         if (mysqli_stmt_execute($stmt)) {
-
-            $success =
-                'Event created successfully.';
-
+            $success = 'Event created successfully. Event ID: ' . $eventID;
         } else {
-
-            $error =
-                'Failed to create event.';
+            $error = 'Failed to create event. ' . mysqli_error($link);
         }
     }
 }
 
 $pageTitle = 'Create Event';
-$activePage = 'committee_create';
+$activePage = 'create_event';
 
 ?>
 
@@ -216,18 +185,18 @@ $activePage = 'committee_create';
 
         <h2>Create Event</h2>
 
-        <?php if($success): ?>
+        <?php if ($success): ?>
 
             <div class="alert alert-success">
-                <?= htmlspecialchars($success) ?>
+                <?php echo htmlspecialchars($success); ?>
             </div>
 
         <?php endif; ?>
 
-        <?php if($error): ?>
+        <?php if ($error): ?>
 
             <div class="alert alert-danger">
-                <?= htmlspecialchars($error) ?>
+                <?php echo htmlspecialchars($error); ?>
             </div>
 
         <?php endif; ?>
@@ -242,7 +211,7 @@ $activePage = 'committee_create';
 
                     <input
                         type="text"
-                        value="<?= htmlspecialchars($committee['ClubName']) ?>"
+                        value="<?php echo htmlspecialchars($committee['ClubName']); ?>"
                         readonly>
 
                 </div>
@@ -253,7 +222,7 @@ $activePage = 'committee_create';
 
                     <input
                         type="text"
-                        value="<?= htmlspecialchars($committee['commiteePosition']) ?>"
+                        value="<?php echo htmlspecialchars($committee['commiteePosition']); ?>"
                         readonly>
 
                 </div>
@@ -358,7 +327,7 @@ $activePage = 'committee_create';
                 <div class="btn-group">
 
                     <a
-                        href="committeeDashboard.php"
+                        href="committeeManageEvent.php"
                         class="btn btn-secondary">
 
                         Back
